@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 — 引导式科研思维训练系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', "PingFang SC", "Microsoft YaHei", sans-serif; background: #0b0f19; color: #e2e8f0; }
+    .serif-title { font-family: 'Noto Serif SC', serif; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center px-4">
+  <form id="login-form" class="w-full max-w-sm bg-slate-900/80 border border-slate-800 rounded-2xl p-8 space-y-5 shadow-xl">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-amber-500 flex items-center justify-center font-bold text-white">L3</div>
+      <div>
+        <h1 class="text-lg font-bold text-white serif-title">科研思维训练工作台</h1>
+        <p class="text-xs text-slate-400">请登录后使用出题审校页面</p>
+      </div>
+    </div>
+    <label class="block space-y-1.5">
+      <span class="text-xs text-slate-300">用户名</span>
+      <input id="username" name="username" autocomplete="username" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" />
+    </label>
+    <label class="block space-y-1.5">
+      <span class="text-xs text-slate-300">密码</span>
+      <input id="password" name="password" type="password" autocomplete="current-password" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" />
+    </label>
+    <p id="login-error" class="hidden text-xs text-rose-300"></p>
+    <button type="submit" class="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white">登录</button>
+  </form>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const error = document.getElementById('login-error');
+      error.classList.add('hidden');
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value
+        })
+      });
+      if (res.ok) {
+        window.location.href = '/';
+        return;
+      }
+      let message = '用户名或密码不正确';
+      try {
+        const data = await res.json();
+        if (typeof data.detail === 'string') message = data.detail;
+      } catch (err) {}
+      error.textContent = message;
+      error.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

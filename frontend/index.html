@@ -64,10 +64,7 @@
         </div>
       </div>
 
-      <!-- Actions: API Key, Upload JSON & Golden Blueprint vs DeepSeek Live Regenerate -->
       <div class="flex flex-wrap items-center gap-2">
-        <input type="password" id="deepseek-api-key-input" placeholder="输入 DeepSeek API Key (可选，默认读环境变量)" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 w-56 focus:outline-none focus:border-indigo-500" />
-
         <label class="cursor-pointer px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
           <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
           <span>上传论文 JSON</span>
@@ -82,6 +79,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           <span>DeepSeek API 动态出题测试</span>
         </button>
+        <button type="button" onclick="logout()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition">退出登录</button>
       </div>
     </div>
 
@@ -300,7 +298,7 @@
 
     async function fetchState() {
       try {
-        const res = await fetch('/api/state');
+        const res = await api('/api/state');
         const data = await res.json();
         APP_STATE.document = data.document;
         APP_STATE.blueprint = data.blueprint;
@@ -337,18 +335,38 @@
       document.getElementById('status-banner').classList.add('hidden');
     }
 
-    function formatPromptWithSlots(text) {
-      if (!text) return '';
-      let escaped = text
+    function esc(value) {
+      return String(value ?? '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-      // Highlight {{...}} dynamic student output slots
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    async function api(url, options) {
+      const res = await fetch(url, options);
+      if (res.status === 401) {
+        window.location.href = '/login';
+        throw new Error('unauthorized');
+      }
+      return res;
+    }
+
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/login';
+    }
+
+    function formatPromptWithSlots(text) {
+      if (!text) return '';
+      const escaped = esc(text);
       return escaped.replace(/\{\{([^}]+)\}\}/g, (match, slotName) => {
         if (APP_STATE.simulatedPreviousOutput && APP_STATE.simulatedPreviousOutput.trim() !== '') {
-          return `<span class="slot-badge" title="动态插槽 ${match} 已填入模拟学生产出">💡 ${APP_STATE.simulatedPreviousOutput.trim()}</span>`;
+          const filled = esc(APP_STATE.simulatedPreviousOutput.trim());
+          return `<span class="slot-badge" title="动态插槽已填入模拟学生产出">💡 ${filled}</span>`;
         }
-        return `<span class="slot-badge">{{${slotName}}}</span>`;
+        return `<span class="slot-badge">{{${esc(slotName)}}}</span>`;
       });
     }
 
@@ -420,7 +438,7 @@
           `<span class="text-emerald-400 flex items-center gap-1">✅ 已通过（第 1–7 关零剧透词泄露）</span>`;
       } else {
         document.getElementById('bp-spoiler-audit-badge').innerHTML =
-          `<span class="text-rose-400 flex items-center gap-1" title="${bp.spoiler_violations.join('; ')}">⚠️ 检测到 ${bp.spoiler_violations.length} 处剧透词告警</span>`;
+          `<span class="text-rose-400 flex items-center gap-1" title="${esc(bp.spoiler_violations.join('; '))}">⚠️ 检测到 ${bp.spoiler_violations.length} 处剧透词告警</span>`;
       }
 
       // Render Left Stage Nav
@@ -439,8 +457,8 @@
               ${st.stage_number}
             </div>
             <div class="min-w-0 flex-1">
-              <div class="text-xs font-bold truncate">${st.title.replace(/^第\s*\d+\s*关[：:]\s*/, '')}</div>
-              <div class="text-[11px] text-slate-400 truncate mt-0.5">${st.subtitle || st.stage_code}</div>
+              <div class="text-xs font-bold truncate">${esc(st.title.replace(/^第\s*\d+\s*关[：:]\s*/, ''))}</div>
+              <div class="text-[11px] text-slate-400 truncate mt-0.5">${esc(st.subtitle || st.stage_code)}</div>
             </div>
           </button>
         `;
@@ -468,15 +486,15 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mt-3 pt-3 border-t border-slate-800/80 text-xs">
             <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
               <span class="text-[10px] font-bold uppercase text-indigo-400 block">1. 具体决策角色</span>
-              <span class="text-slate-200 mt-0.5 block">${fb.role || '-'}</span>
+              <span class="text-slate-200 mt-0.5 block">${esc(fb.role || '-')}</span>
             </div>
             <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
               <span class="text-[10px] font-bold uppercase text-amber-400 block">2. 反直觉的现实矛盾</span>
-              <span class="text-slate-200 mt-0.5 block">${fb.counter_intuitive_conflict || '-'}</span>
+              <span class="text-slate-200 mt-0.5 block">${esc(fb.counter_intuitive_conflict || '-')}</span>
             </div>
             <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
               <span class="text-[10px] font-bold uppercase text-emerald-400 block">3. 聚焦的诊断提问</span>
-              <span class="text-slate-200 mt-0.5 block">${fb.diagnostic_question || '-'}</span>
+              <span class="text-slate-200 mt-0.5 block">${esc(fb.diagnostic_question || '-')}</span>
             </div>
           </div>
         `;
@@ -494,7 +512,7 @@
               <span class="text-[11px] text-amber-200/70">输入学生上一关确认的研究产出，实时预览动态题干拼装或让 DeepSeek 重新定制本关</span>
             </div>
             <div class="flex gap-2">
-              <input type="text" id="sim-prev-output-input" value="${APP_STATE.simulatedPreviousOutput.replace(/"/g, '&quot;')}"
+              <input type="text" id="sim-prev-output-input" value="${esc(APP_STATE.simulatedPreviousOutput)}"
                 oninput="updateSimulatedSlot(this.value)"
                 placeholder="例如：文献仍以整篇为单位堆放，缺乏能够保留上下文脉络的细粒度知识关联机制..."
                 class="flex-1 bg-slate-900/90 border border-amber-500/40 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400" />
@@ -512,16 +530,16 @@
           <div class="flex items-start justify-between gap-2">
             <div class="flex items-center gap-2">
               <span class="w-6 h-6 rounded-md bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 font-bold text-xs flex items-center justify-center">
-                ${opt.key}
+                ${esc(opt.key)}
               </span>
-              <span class="text-xs font-bold text-indigo-300">${opt.dimension}</span>
+              <span class="text-xs font-bold text-indigo-300">${esc(opt.dimension)}</span>
             </div>
             <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400">等权学术切面</span>
           </div>
-          <p class="text-xs text-slate-200 leading-relaxed pl-8">${opt.text}</p>
+          <p class="text-xs text-slate-200 leading-relaxed pl-8">${esc(opt.text)}</p>
           <div class="ml-8 bg-indigo-950/30 border-l-2 border-indigo-500 pl-3 py-1.5 text-[11px] text-indigo-200">
             <span class="font-semibold text-indigo-400">🎯 预设苏格拉底追问钩子 (Follow-up Hook)：</span>
-            <span>${opt.follow_up_hook}</span>
+            <span>${esc(opt.follow_up_hook)}</span>
           </div>
         </div>
       `).join('');
@@ -533,11 +551,11 @@
             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
               逻辑安检门 #${idx + 1}
             </span>
-            <span class="text-xs font-bold text-white">${rub.criterion}</span>
+            <span class="text-xs font-bold text-white">${esc(rub.criterion)}</span>
           </div>
           <p class="text-xs text-slate-300 pl-1">
             <span class="text-slate-400 font-medium">未通过时的精准追问话术 (PROBE)：</span>
-            “${rub.probe_prompt}”
+            “${esc(rub.probe_prompt)}”
           </p>
         </div>
       `).join('');
@@ -547,14 +565,14 @@
         <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-3 space-y-1.5">
           <div class="flex items-center justify-between">
             <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/40">
-              Point ${anc.point} · ${anc.label}
+              Point ${esc(anc.point)} · ${esc(anc.label)}
             </span>
-            <span class="text-[10px] text-slate-500 font-mono">${anc.claim_id}</span>
+            <span class="text-[10px] text-slate-500 font-mono">${esc(anc.claim_id)}</span>
           </div>
-          <div class="text-xs font-medium text-slate-200">${anc.summary}</div>
+          <div class="text-xs font-medium text-slate-200">${esc(anc.summary)}</div>
           ${anc.display_quote ? `
             <div class="text-[11px] text-slate-400 bg-slate-950/80 px-2.5 py-1.5 rounded border border-slate-800/80 italic">
-              原文清洗引文：“${anc.display_quote}”
+              原文清洗引文：“${esc(anc.display_quote)}”
             </div>
           ` : ''}
         </div>
@@ -569,9 +587,9 @@
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
                   Stage ${st.stage_number} / 8
                 </span>
-                <h2 class="text-lg font-bold text-white serif-title">${st.title}</h2>
+                <h2 class="text-lg font-bold text-white serif-title">${esc(st.title)}</h2>
               </div>
-              <p class="text-xs text-slate-400 mt-1">${st.subtitle || ''} ${st.paradigm_focus ? `｜ 范式侧重：${st.paradigm_focus}` : ''}</p>
+              <p class="text-xs text-slate-400 mt-1">${esc(st.subtitle || '')} ${st.paradigm_focus ? `｜ 范式侧重：${esc(st.paradigm_focus)}` : ''}</p>
             </div>
           </div>
 
@@ -612,7 +630,7 @@
         <div class="glass-card rounded-xl p-5 space-y-3.5">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-bold text-white">🧭 ${st.options_type_label || '四维等权学术切面选择题'} [SCAFFOLD_CHOICE]</h3>
+              <h3 class="text-sm font-bold text-white">🧭 ${esc(st.options_type_label || '四维等权学术切面选择题')} [SCAFFOLD_CHOICE]</h3>
               <p class="text-xs text-slate-400 mt-0.5">当学生连续 2 轮表述笼统重复时弹出；4 个维度学术价值完全平等，各绑定专属追问钩子</p>
             </div>
           </div>
@@ -644,11 +662,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
             <div class="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-3.5 space-y-1">
               <div class="font-bold text-emerald-300">🟢 模式 A：同题对照 (Same-Topic Comparison)</div>
-              <p class="text-slate-300 leading-relaxed">${st.same_topic_comparison_guide || '当学生研究方向与论文相近时，直接对比双方在具体概念、理论透镜与机制设计上的异同。'}</p>
+              <p class="text-slate-300 leading-relaxed">${esc(st.same_topic_comparison_guide || '当学生研究方向与论文相近时，直接对比双方在具体概念、理论透镜与机制设计上的异同。')}</p>
             </div>
             <div class="bg-amber-950/20 border border-amber-500/30 rounded-xl p-3.5 space-y-1">
               <div class="font-bold text-amber-300">🟠 模式 B：思维骨架对照 (Structural Skeleton Comparison)</div>
-              <p class="text-slate-300 leading-relaxed">${st.structural_skeleton_guide || '当学生选择了与原论文截然不同的分支时，明确告知其选题独立于原论文，转为对照作者拆解论证的思维骨架。'}</p>
+              <p class="text-slate-300 leading-relaxed">${esc(st.structural_skeleton_guide || '当学生选择了与原论文截然不同的分支时，明确告知其选题独立于原论文，转为对照作者拆解论证的思维骨架。')}</p>
             </div>
           </div>
 
@@ -680,7 +698,7 @@
     async function handleRestoreGoldenBlueprint() {
       showStatus('正在加载程序内置的 v2.0 黄金标准 8 关训练蓝图...');
       try {
-        const res = await fetch('/api/reset-golden-blueprint', {
+        const res = await api('/api/reset-golden-blueprint', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ document_id: APP_STATE.document.document_id })
@@ -698,18 +716,16 @@
     }
 
     async function handleGenerateFullBlueprint() {
-      const apiKey = document.getElementById('deepseek-api-key-input')?.value?.trim() || null;
       showStatus('正在调用 DeepSeek API (双并发批次) 实时逆向还原 8 关动态训练蓝图，约需 15–20 秒...');
       const btn = document.getElementById('btn-generate-all');
       btn.disabled = true;
       btn.classList.add('opacity-50');
       try {
-        const res = await fetch('/api/generate-blueprint', {
+        const res = await api('/api/generate-blueprint', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            document_id: APP_STATE.document.document_id,
-            api_key: apiKey
+            document_id: APP_STATE.document.document_id
           })
         });
         if (!res.ok) {
@@ -730,20 +746,18 @@
     }
 
     async function handleRegenerateSingleStage(stageNum) {
-      const apiKey = document.getElementById('deepseek-api-key-input')?.value?.trim() || null;
       const instruction = document.getElementById('stage-tune-instruction')?.value || '';
       const prevOutput = APP_STATE.simulatedPreviousOutput || '';
       showStatus(`正在调用 DeepSeek API 实时重写第 ${stageNum} 关...`);
       try {
-        const res = await fetch('/api/regenerate-stage', {
+        const res = await api('/api/regenerate-stage', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             document_id: APP_STATE.document.document_id,
             stage_number: stageNum,
             teacher_instruction: instruction,
-            previous_stage_student_output: prevOutput,
-            api_key: apiKey
+            previous_stage_student_output: prevOutput
           })
         });
         if (!res.ok) {
@@ -768,7 +782,7 @@
       formData.append('file', file);
       showStatus(`正在上传并清洗《${file.name}》...`);
       try {
-        const res = await fetch('/api/upload-json', {
+        const res = await api('/api/upload-json', {
           method: 'POST',
           body: formData
         });
@@ -779,8 +793,7 @@
           return;
         }
         await fetchState();
-        // Automatically trigger DeepSeek blueprint generation for new paper
-        await handleGenerateFullBlueprint();
+        hideStatus();
       } catch (e) {
         alert('上传异常: ' + e.message);
         hideStatus();
@@ -827,11 +840,11 @@
         return `
           <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="px-2 py-0.5 rounded text-xs font-mono font-bold border ${badgeColor}">${qf.flag_code}</span>
-              <span class="text-xs text-slate-400">触发源：${qf.gate_name || qf.point}</span>
+              <span class="px-2 py-0.5 rounded text-xs font-mono font-bold border ${badgeColor}">${esc(qf.flag_code)}</span>
+              <span class="text-xs text-slate-400">触发源：${esc(qf.gate_name || qf.point)}</span>
             </div>
-            <p class="text-xs text-slate-200">${qf.description}</p>
-            <p class="text-xs text-emerald-400">💡 工程对策：${qf.suggestion}</p>
+            <p class="text-xs text-slate-200">${esc(qf.description)}</p>
+            <p class="text-xs text-emerald-400">💡 工程对策：${esc(qf.suggestion)}</p>
           </div>
         `;
       }).join('');
@@ -847,10 +860,10 @@
         return `
           <div class="p-2 rounded-lg border ${color} flex flex-col justify-between">
             <div class="flex items-center justify-between">
-              <span class="font-mono font-bold">#${p.point}</span>
-              <span class="text-[10px] opacity-80">${p.status}</span>
+              <span class="font-mono font-bold">#${esc(p.point)}</span>
+              <span class="text-[10px] opacity-80">${esc(p.status)}</span>
             </div>
-            <div class="truncate font-medium mt-1" title="${p.label}">${p.label}</div>
+            <div class="truncate font-medium mt-1" title="${esc(p.label)}">${esc(p.label)}</div>
           </div>
         `;
       }).join('');
@@ -862,17 +875,16 @@
       const evList = Object.values(doc.evidence).filter(ev => !onlyNewline || ev.raw_quote.includes('\n'));
 
       document.getElementById('quotes-diff-tbody').innerHTML = evList.map(ev => {
-        const highlightedRaw = ev.raw_quote
-          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        const highlightedRaw = esc(ev.raw_quote)
           .replace(/\n/g, '<span class="px-1 py-0.2 mx-0.5 rounded bg-rose-500/30 text-rose-300 font-mono">\\n</span>');
         return `
           <tr class="hover:bg-slate-900/50">
             <td class="py-2.5 px-3 font-mono text-slate-400">
-              <div>${ev.evidence_ref}</div>
-              <div class="text-[10px] text-slate-500">[${ev.offset_start || '-'}..${ev.offset_end || '-'}]</div>
+              <div>${esc(ev.evidence_ref)}</div>
+              <div class="text-[10px] text-slate-500">[${esc(ev.offset_start || '-')}..${esc(ev.offset_end || '-')}]</div>
             </td>
             <td class="py-2.5 px-3 text-slate-300 font-mono text-[11px]">${highlightedRaw}</td>
-            <td class="py-2.5 px-3 text-emerald-300 font-medium">${ev.display_quote}</td>
+            <td class="py-2.5 px-3 text-emerald-300 font-medium">${esc(ev.display_quote)}</td>
           </tr>
         `;
       }).join('');
@@ -885,18 +897,18 @@
         return `
           <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-3 space-y-1">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-emerald-400">Point ${c.point} · ${c.label}</span>
-              <span class="text-[10px] text-slate-500 font-mono">${c.source_path}</span>
+              <span class="text-xs font-bold text-emerald-400">Point ${esc(c.point)} · ${esc(c.label)}</span>
+              <span class="text-[10px] text-slate-500 font-mono">${esc(c.source_path)}</span>
             </div>
-            <div class="text-xs text-slate-200">${c.content}</div>
-            ${ev ? `<div class="text-[11px] text-slate-400 italic">引文：“${ev.display_quote}”</div>` : ''}
+            <div class="text-xs text-slate-200">${esc(c.content)}</div>
+            ${ev ? `<div class="text-[11px] text-slate-400 italic">引文：“${esc(ev.display_quote)}”</div>` : ''}
           </div>
         `;
       }).join('');
 
       document.getElementById('spoiler-tags-container').innerHTML = doc.spoiler_blacklist.map((term, idx) => `
         <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-rose-950/60 text-rose-200 border border-rose-500/40 flex items-center gap-1.5">
-          <span>${term}</span>
+          <span>${esc(term)}</span>
           <button onclick="removeSpoilerTerm(${idx})" class="text-rose-400 hover:text-white font-bold">×</button>
         </span>
       `).join('');
@@ -921,7 +933,7 @@
     }
 
     async function saveBlacklist(newList) {
-      const res = await fetch('/api/update-blacklist', {
+      const res = await api('/api/update-blacklist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
