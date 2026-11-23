@@ -1,0 +1,622 @@
+"""
+Golden Reference & Deterministic Heuristic Blueprint Engine (Section 6 of v2.0 spec).
+Provides:
+1. Built-in Golden 8-Stage TrainingBlueprint for 《面向知识熵减的智慧图书馆：Lib3范式研究》
+   matching Section 6 of v2_0.md verbatim, plus complete follow-up hooks, diagnostic rubrics,
+   and provenance-linked cleaned quotes.
+2. Rule-based heuristic blueprint generator for any uploaded `lis-mas-v0.1` JSON so the system
+   can operate deterministically offline or verify against DeepSeek API live generation.
+"""
+
+from datetime import datetime, timezone
+from typing import List
+from backend.models import (
+    AdaptedDocument,
+    TrainingBlueprint,
+    StageBlueprint,
+    ChoiceOption,
+    DiagnosticRubricItem,
+)
+from backend.question_builder import build_expert_anchors_for_stage, audit_and_scrub_spoilers
+
+
+def build_golden_lib3_blueprint(doc: AdaptedDocument) -> TrainingBlueprint:
+    """
+    Constructs the exact 8-stage TrainingBlueprint specified in Section 6 of v2_0.md
+    for 《面向知识熵减的智慧图书馆：Lib3范式研究》, enriched with Socratic hooks,
+    diagnostic rubrics, and provenance-linked cleaned quotes.
+    """
+    stages: List[StageBlueprint] = [
+        # Stage 1
+        StageBlueprint(
+            stage_number=1,
+            stage_code="problem_discovery",
+            title="第 1 关：发现问题（案发现场）",
+            subtitle="在具象困境中锁定核心研究对象，解释『检索越快为何越焦虑』的内在矛盾",
+            paradigm_focus="从宏观服务表象切入底层知识组织与认知负荷的深层矛盾",
+            forbidden_demands=["严禁剧透 Lib3/知识熵减/SAM 等专有名词", "不设唯一标准答案"],
+            opening_prompt_template=(
+                "假设你是一所研究型大学的图书馆首席架构师。过去十年，你们建成了极其强大的数据库和 AI 检索系统，"
+                "几乎任何文献都能在 1 秒内搜到——但全校师生却普遍抱怨‘越搜越焦虑，根本看不过来，也很难直接用来做科研’。"
+                "如果让你立项研究这个怪现象，你觉得真正出问题的环节到底在哪里？"
+            ),
+            opening_formula_breakdown={
+                "role": "研究型大学图书馆首席架构师",
+                "counter_intuitive_conflict": "建成强大数据库与 1 秒级 AI 检索系统，师生却抱怨『越搜越焦虑、看不过来、难以直接用于科研』",
+                "diagnostic_question": "如果让你立项研究这个怪现象，你觉得真正出问题的环节到底在哪里？"
+            },
+            options_type_label="收敛选择题（四维等权切面）",
+            options=[
+                ChoiceOption(
+                    key="A",
+                    dimension="资源入口层",
+                    text="数据库太分散，缺乏统一的跨库整合与检索入口。",
+                    follow_up_hook="你选择了资源入口层。但假设明天我们把所有数据库合并成一个超级入口，1 秒内搜出 5 万篇文献，师生的『看不过来、越搜越焦虑』会因此减轻还是反而加剧？核心瓶颈到底在哪？"
+                ),
+                ChoiceOption(
+                    key="B",
+                    dimension="知识表示层",
+                    text="文献还是整篇堆在一起，里面的核心知识没有被提取和建立关联。",
+                    follow_up_hook="你把问题从『文献检索』推进到了『知识表示粒度』。那么，传统以『整篇文献』为管理单元的模式，究竟在哪个具体科研环节卡住了学者的脖子？"
+                ),
+                ChoiceOption(
+                    key="C",
+                    dimension="认知负荷层",
+                    text="信息供给远超人类阅读与理解带宽，缺乏降低选择与判断负担的机制。",
+                    follow_up_hook="你抓住了『有限认知带宽』与『无限信息供给』的冲突。但为什么检索技术越发达，这种认知过载反而越严重？现有系统把什么负担转嫁给了读者？"
+                ),
+                ChoiceOption(
+                    key="D",
+                    dimension="信任治理层",
+                    text="AI 检索和生成的结果真假难辨，用户不敢直接用于科研。",
+                    follow_up_hook="你切入了科研信任与验证成本。为了确认一条 AI 结论是否可靠，学者不得不退回去逐篇核对原文，这种『验证成本激增』反映出底层数据结构缺了什么？"
+                ),
+                ChoiceOption(
+                    key="E",
+                    dimension="自定义切面",
+                    text="其他（自行提出问题环节与核心矛盾）。",
+                    follow_up_hook="请具体阐述你锁定的问题环节，并解释为什么检索效率提升反而加剧了科研困境？"
+                ),
+            ],
+            diagnostic_rubrics=[
+                DiagnosticRubricItem(
+                    rubric_id="s1_r1",
+                    criterion="是否锁定了具体研究对象（而非泛泛谈论 AI 很强大或信息很多）？",
+                    probe_prompt="你提到了信息过载的现象，但作为立项研究，你准备把解剖刀对准哪个具体对象——是图书馆的底层管理单元、检索排序机制，还是学者的认知验证过程？"
+                ),
+                DiagnosticRubricItem(
+                    rubric_id="s1_r2",
+                    criterion="是否解释了『检索变快了，为什么反而更难用』的内在矛盾机制？",
+                    probe_prompt="检索速度已经提升到了秒级，为什么技术提效没有带来科研减负，反而转化成了新的负担？这背后的系统瓶颈到底从什么转向了什么？"
+                ),
+            ],
+            expert_anchors=build_expert_anchors_for_stage(doc, 1),
+            same_topic_comparison_guide=(
+                "你的诊断与论文高度同频：作者同样指出传统『资源容器』模式只优化存储与检索效率，"
+                "无法缓解『人类有限认知带宽与无限信息供给之间的冲突』（Point 01），导致系统瓶颈从『信息不足』彻底转向『有序性不足』（Point 70）。"
+            ),
+            structural_skeleton_guide=(
+                "你的选题切入点（如跨库入口整合或信任治理）已形成独立于原论文的研究分支。"
+                "无需改成作者的方向，建议观察作者的论证骨架：如何将表象痛点提炼为『传统供给模式（A）与新型认知瓶颈（B）的结构性错位』。"
+            )
+        ),
+
+        # Stage 2
+        StageBlueprint(
+            stage_number=2,
+            stage_code="gap_identification",
+            title="第 2 关：识别缺口（靶子测试）",
+            subtitle="直面现有技术（知识图谱、细粒度抽取、大模型 RAG）的质询，找出本质局限",
+            paradigm_focus="批判性审视既有细粒度知识组织与 AI 工具的底层结构缺陷",
+            forbidden_demands=["严禁提前剧透 SAM 三元组或 ICSP 协议名称"],
+            opening_prompt_template=(
+                "你已经锁定了核心问题：{{第1关学生问题}}。但评审专家马上会泼一盆冷水："
+                "‘现在市面上已经有知识图谱、细粒度知识抽取，甚至还有各种大模型 RAG 工具了，它们不就在干这事吗？’"
+                "你打算怎么反驳他们，说明现有方案到底差在哪一口气？"
+            ),
+            opening_formula_breakdown=None,
+            options_type_label="辨析选择题（四维技术局限切面）",
+            options=[
+                ChoiceOption(
+                    key="A",
+                    dimension="语境断裂",
+                    text="现有抽取把知识切碎了，脱离了原文论证脉络，学者不敢用、没法溯源。",
+                    follow_up_hook="你指出了『切碎导致失真』。如果学者看到一条被抽出来的孤立结论，却不知道它在原文什么假设前提下成立，需要补上什么机制才能实现『解构却不失真』？"
+                ),
+                ChoiceOption(
+                    key="B",
+                    dimension="静态僵化",
+                    text="现有知识库高度依赖人工维护，无法自己发现矛盾、自动更新演化。",
+                    follow_up_hook="你击中了『静态死库』的软肋。当某个领域每天涌现互相冲突的新论文时，现有的静态知识图谱为什么会迅速过时甚至坍塌？它缺了什么自演化动力？"
+                ),
+                ChoiceOption(
+                    key="C",
+                    dimension="激励缺失",
+                    text="现有模式停留在“整篇文献”级版权，微观知识贡献者得不到回报，优质内容进不来。",
+                    follow_up_hook="你切入了学术生态的制度瓶颈。如果大模型或知识库直接把学者的核心论断抽走重组，却不给原始作者结算学术信用，会导致怎样的生态公地悲剧？"
+                ),
+                ChoiceOption(
+                    key="D",
+                    dimension="成本失控",
+                    text="现有技术虽然能做，但整理成本和算力开销远大于带来的实际价值。",
+                    follow_up_hook="你引入了投入产出比视角。如果一套知识系统的维护复杂度远超它帮用户省下的认知成本，我们该如何定义一套干预方案在什么时候才算『真正做正功』？"
+                ),
+                ChoiceOption(
+                    key="E",
+                    dimension="自定义切面",
+                    text="其他（自行指出现有技术靶子的核心局限）。",
+                    follow_up_hook="请具体点明你针对的现有技术靶子，并说明为什么简单的工程打补丁无法解决该局限？"
+                ),
+            ],
+            diagnostic_rubrics=[
+                DiagnosticRubricItem(
+                    rubric_id="s2_r1",
+                    criterion="是否指出了具体的『现有方案』作为反驳靶子（如传统知识元、静态知识图谱或 RAG）？",
+                    probe_prompt="为了说服挑剔的评审专家，不能只笼统说『现有技术不够好』。你具体拿哪一类现有技术（比如传统知识图谱、细粒度抽取或大模型 RAG）作为对比靶子？"
+                ),
+                DiagnosticRubricItem(
+                    rubric_id="s2_r2",
+                    criterion="是否说清了现有方案的本质结构局限，而非笼统说『不够智能/准确率不高』？",
+                    probe_prompt="如果只是准确率不够高，随着模型升级就能解决。你认为现有方案在底层结构上存在什么『光靠堆算力或换更大的模型也无法自动解决』的根本缺陷？"
+                ),
+            ],
+            expert_anchors=build_expert_anchors_for_stage(doc, 2),
+            same_topic_comparison_guide=(
+                "对照论文 Point 01 与 Point 72：作者将靶子明确对准既有『知识元』与『细粒度知识抽取』方法，"
+                "一针见血地指出其存在三重局限：1）语境不可逆（解构即失真）；2）动态演化能力不足（静态陈列）；3）权属粒度粗（停留在文献级版权）。"
+            ),
+            structural_skeleton_guide=(
+                "即使你瞄准了不同的技术靶子，也可以借鉴作者在文献批判（Point 72）中的『三维立论法』："
+                "从【表示保真度】、【动态演化性】和【生态激励制度】三个正交维度联合论证既有方案为何存在代际鸿沟。"
+            )
+        ),
+
+        # Stage 3
+        StageBlueprint(
+            stage_number=3,
+            stage_code="theory_selection",
+            title="第 3 关：选择理论（寻找透镜）",
+            subtitle="跨学科借用底层理论框架，避免把学术论文写成纯工程说明书",
+            paradigm_focus="寻找能够解释『无序到有序』或『知识自主演化』的跨学科元理论透镜",
+            forbidden_demands=["严禁强求学生必须选波普尔或热力学，任何自洽理论均可"],
+            opening_prompt_template=(
+                "为了彻底解决 {{第2关研究缺口}}，不能只靠堆砌工程代码，你需要借用一个底层理论或跨学科视角，"
+                "来重新定义‘未来的图书馆/知识系统’。如果让你跨学科‘借武器’，你会用哪种理论框架来解释你的构想？为什么？"
+            ),
+            opening_formula_breakdown=None,
+            options_type_label="灵感卡片（跨学科理论透镜选择题）",
+            options=[
+                ChoiceOption(
+                    key="A",
+                    dimension="物理学/控制论透镜",
+                    text="把信息混乱看作“熵增”，把图书馆的使命定义为对抗无序的“减熵系统”。",
+                    follow_up_hook="借用『熵与减熵』非常直观！但物理学的热力学熵和知识系统的混乱不是一回事——在你的框架里，什么因素代表『噪声/熵』，什么机制在做『负熵功』？"
+                ),
+                ChoiceOption(
+                    key="B",
+                    dimension="哲学认识论透镜",
+                    text="把客观知识看作独立于纸张和服务器的“客观世界”，思考如何让它被批判性激活。",
+                    follow_up_hook="将客观知识视为独立于物理载体与主观心灵的第三类世界很有深度。那么，如果知识只被静态锁在数据库里，它算真正活在这个客观知识世界里吗？靠什么激活它？"
+                ),
+                ChoiceOption(
+                    key="C",
+                    dimension="生物学/系统论透镜",
+                    text="把知识库看作一个能“变异、杂交、优胜劣汰”的有机生命体。",
+                    follow_up_hook="生物进化透镜很适合解释动态更新！但在学术知识系统里，具体什么操作对应基因的『变异』和『杂交』？又靠什么法则来执行『自然选择（优胜劣汰）』？"
+                ),
+                ChoiceOption(
+                    key="D",
+                    dimension="信息行为/经济学透镜",
+                    text="从用户的“获取成本—认知成本—收益权衡”出发，建立决策准则。",
+                    follow_up_hook="成本收益透镜非常务实。当数字化把『获取文献的成本』降到接近零之后，公式里哪一项成本急剧膨胀成了新的分母瓶颈？系统该如何量化干预收益？"
+                ),
+                ChoiceOption(
+                    key="E",
+                    dimension="自定义透镜",
+                    text="其他（自行提出其他理论，如信息生态、社会技术系统、分布式认知等）。",
+                    follow_up_hook="请说明你引入的理论核心概念如何精准映射到第 1 关的矛盾与第 2 关的研究缺口上？"
+                ),
+            ],
+            diagnostic_rubrics=[
+                DiagnosticRubricItem(
+                    rubric_id="s3_r1",
+                    criterion="是否明确选择了至少一个底层理论视角并界定了核心概念？",
+                    probe_prompt="你倾向于从哪个学科借用理论透镜？在这个理论透镜下，原本的『文献堆积与检索焦虑』会被重新翻译成什么学术概念？"
+                ),
+                DiagnosticRubricItem(
+                    rubric_id="s3_r2",
+                    criterion="是单纯『贴了一个高大上的理论标签』，还是解释了该理论如何精准映射到前两关的矛盾上？",
+                    probe_prompt="很多论文喜欢在引言里贴一个高大上的理论名词，后文却完全不用。你选的这个理论，具体如何指导你解决上一关指出的现有技术缺口？"
+                ),
+            ],
+            expert_anchors=build_expert_anchors_for_stage(doc, 3),
+            same_topic_comparison_guide=(
+                "对照论文 Point 03：作者展现了一个精妙的『多理论耦合框架』——以【波普尔世界 3 理论】奠定客观知识本体论，"
+                "以【知识熵学派与系统论（Troncale 解析合成）】刻画无序到有序的能量做功，再借用【遗传算法（变异—交叉—选择）】设计算子演化机制。"
+            ),
+            structural_skeleton_guide=(
+                "你的理论透镜与原论文不同，这正是学术创新的来源。可借鉴作者的『三级理论装配骨架』："
+                "1）本体论理论（定义研究对象是什么） + 2）度量理论（定义什么是好/坏） + 3）动力学理论（定义系统如何演化）。"
+            )
+        ),
+
+        # Stage 4
+        StageBlueprint(
+            stage_number=4,
+            stage_code="proposition_formation",
+            title="第 4 关：形成命题（亮出底牌）",
+            subtitle="将理论思考浓缩为 1–2 句斩钉截铁、具有可反驳性的核心研究命题",
+            paradigm_focus="在设计科学范式下确立系统的本体论转向与合法性效能判据",
+            forbidden_demands=["严禁接受『AI 应该更好地服务读者』这类绝对正确但毫无信息量的空话"],
+            opening_prompt_template=(
+                "结合你选定的 {{第3关理论视角}}，请把你刚才的想法浓缩成 1 到 2 句斩钉截铁的核心研究命题"
+                "（例如：‘只有当……时，……才成立’，或‘未来系统的本质应当从 A 转向 B’）。这句话将是你整篇论文的立论靶子。"
+            ),
+            opening_formula_breakdown=None,
+            options_type_label="命题句式支架选择题",
+            options=[
+                ChoiceOption(
+                    key="A",
+                    dimension="本体转向型",
+                    text="主张系统的底层管理对象必须从“物理/数字载体（文献）”彻底转向“可关联的最小逻辑单元与关系”。",
+                    follow_up_hook="立论很鲜明！但如果把整篇文献拆解为最小逻辑单元，你如何在一句话命题中同时承诺它不会丧失原有的学术语境与论证可靠性？"
+                ),
+                ChoiceOption(
+                    key="B",
+                    dimension="效能判据型",
+                    text="主张任何知识整理与技术干预行为都必须满足“有效认知收益 > 系统管理复杂度成本”，否则就是做负功。",
+                    follow_up_hook="这个效能判据非常硬核！如果有人为了精细管理知识设计了一套极其繁琐的标注流程，按照你的命题，它为什么反而失去了合法性？"
+                ),
+                ChoiceOption(
+                    key="C",
+                    dimension="角色跃迁型",
+                    text="主张系统应从被动等待检索的“静态资源仓库”，转变为能主动识别冲突、推演假说与自我纠错的“认知操作系统”。",
+                    follow_up_hook="把图书馆重新定义为『自演化的认知操作系统』极具张力。要支撑这个命题，系统必须具备哪项传统检索系统完全没有的核心自主能力？"
+                ),
+                ChoiceOption(
+                    key="D",
+                    dimension="协同治理型",
+                    text="主张未来知识基础设施必须将“细粒度知识创造的微版权确权与机器自动推演校验”内嵌为底层协议。",
+                    follow_up_hook="从制度与协议层立论很独特！请进一步明确：在什么条件下，人类学者才愿意把自己的核心知识贡献给这套自动化系统？"
+                ),
+                ChoiceOption(
+                    key="E",
+                    dimension="自定义命题",
+                    text="其他（自行拟定核心研究命题）。",
+                    follow_up_hook="请审视你拟定的命题：如果一个反对派学者想要反驳你，他会攻击哪一点？如果没人能反驳，说明这句话可能还是句常识空话。"
+                ),
+            ],
+            diagnostic_rubrics=[
+                DiagnosticRubricItem(
+                    rubric_id="s4_r1",
+                    criterion="命题是否具备『可论证性/可反驳性』（而非『应该加强智慧图书馆建设』之类的正确的废话）？",
+                    probe_prompt="你现在的表述比较温和稳妥，几乎没有人会反对，但这也意味着它缺乏学术锋芒。能不能把它改写成一句『敢于树敌、明确界定从旧范式 A 跃迁到新范式 B，或明确给出成立边界条件』的核心命题？"
+                ),
+                DiagnosticRubricItem(
+                    rubric_id="s4_r2",
+                    criterion="命题是否把前 3 关的『核心痛点 + 理论透镜』凝聚成了清晰的因果或本体论论断？",
+                    probe_prompt="请检查你的命题：里面是否清晰体现了你在第 3 关引入的理论透镜？它是否为下一关设计具体系统架构划定了不可妥协的硬指标？"
+                ),
+            ],
+            expert_anchors=build_expert_anchors_for_stage(doc, 4),
+            same_topic_comparison_guide=(
+                "对照论文 Point 02、Point 71 与 Point 74：作者亮出了两大核心命题："
+                "1）【本体论转向】图书馆的本体论应架构于知识管理之上，其本质是为客观知识世界安装一套自迭代操作系统（Point 02/74）；"
+                "2）【合法性判据】管理行为只有在净负熵贡献率为正（有效通量增益大于系统管理复杂度熵增）时才具备合法性（Point 71）。"
+            ),
+            structural_skeleton_guide=(
+                "观察作者如何构建设计科学论文的核心命题骨架："
+                "用一句【定性本体论命题（系统本质是什么）】搭配一句【定量/半定量合法性判据（满足什么不等式才算有效）】，形成既立意高远又可检验的立论双翼。"
+            )
+        ),
+
+        # Stage 5
+        StageBlueprint(
+            stage_number=5,
+            stage_code="mechanism_design",
+            title="第 5 关：设计方案（核心机制构建）",
+            subtitle="将核心命题转化为可运转的人工制品：数据结构表示 + 演化运行算子/概念模型",
+            paradigm_focus="设计科学（Design Science）核心人工制品构建：知识表示结构 + 演化算子 + 启发式度量公式",
+            forbidden_demands=["严禁强求问卷调查表", "严禁强求统计检验 p 值或大样本被试招募"],
+            opening_prompt_template=(
+                "现在进入核心设计环节。为了把你的命题 {{第4关研究命题}} 变成一套能运转的系统，"
+                "你至少要设计两个核心部件：1）知识在系统里长什么样（数据/表示结构）？ "
+                "2）系统靠什么机制自己动起来（运行逻辑/度量模型）？请描述你的核心设计。"
+            ),
+            opening_formula_breakdown=None,
+            options_type_label="架构支架选择题（设计科学三部件切面）",
+            options=[
+                ChoiceOption(
+                    key="A",
+                    dimension="数据结构侧重",
+                    text="设计一种既包含核心逻辑标签、又带着原文溯源指针和动态可信度权重的复合知识单元。",
+                    follow_up_hook="这个三元复合结构设计非常扎实！请具体说明：『原文溯源指针』和『动态可信度权重』各自用来解决你在第 2 关指出的哪个痛点？"
+                ),
+                ChoiceOption(
+                    key="B",
+                    dimension="演化机制侧重",
+                    text="设计一套“自动找矛盾 → 跨界组合生成假说 → 淘汰过时观点”的循环算子。",
+                    follow_up_hook="有了动态演化算子，知识库就活起来了！请细化一下：当系统发现两个知识单元互相矛盾时，它按什么规则触发下一步？靠什么标准淘汰低质假说？"
+                ),
+                ChoiceOption(
+                    key="C",
+                    dimension="度量模型侧重",
+                    text="先写一个概念性公式，把信息通量、噪声、认知成本和 AI 增益的关系定性/半定量地表达出来。",
+                    follow_up_hook="用概念公式把理论模型形式化是非常有力的学术表达！在你的公式里，哪些变量放在分子（正向驱动），哪些变量放在分母（阻力与成本）？"
+                ),
+                ChoiceOption(
+                    key="D",
+                    dimension="协议与接口侧重",
+                    text="设计一套标准化知识注入、跨库语义映射与自动化溯源结算的底层交互协议。",
+                    follow_up_hook="从协议层设计架构极具工程落地感。请说明当一篇新论文进入系统时，你的协议如何完成从『原始文本』到『可计算知识节点』的输入—处理—输出闭环？"
+                ),
+                ChoiceOption(
+                    key="E",
+                    dimension="自定义架构",
+                    text="其他（自行设计核心表示结构与运行机制）。",
+                    follow_up_hook="请确保你的设计包含清晰的『静态表示结构』与『动态运行机制』，并说明输入是什么、怎么处理、输出是什么？"
+                ),
+            ],
+            diagnostic_rubrics=[
+                DiagnosticRubricItem(
+                    rubric_id="s5_r1",
+                    criterion="部件设计是否直接回应了第 2 关指出的缺口（如语境断裂、静态僵化或成本失控）？",
+                    probe_prompt="对照你在第 2 关指出的现有技术局限，你现在设计的这套结构/机制，具体是靠哪一个字段或哪一步操作把那个缺口堵上的？"
+                ),
+                DiagnosticRubricItem(
+                    rubric_id="s5_r2",
+                    criterion="是否说清了『静态数据结构长什么样』以及『动态机制的输入—处理—输出闭环』？",
+                    probe_prompt="目前你的方案还偏宏观概念。如果让工程师照着你的方案写原型，系统里最小的数据单元包含哪几个核心属性？系统自己运转时，输入什么、经过哪几个算子或步骤、输出什么？"
+                ),
+            ],
+            expert_anchors=build_expert_anchors_for_stage(doc, 5),
+            same_topic_comparison_guide=(
+                "对照论文 Point 32 与 Point 61–68：作者构建了完整的三层设计科学人工制品：\n"
+                "1）【概念度量公式】公式(1)有效通量 F = Φ / [E × (C_acq + C_cog)]，公式(2)净负熵贡献率 ΔN = ΔF / E_management，公式(4)引入 AI 做功强度 ψ_AI；\n"
+                "2）【数据结构】公式(3) SAM 三元组 A = (L_sig 语义特征向量, P_context 多维语境指针, θ 多维可信度权重)，实现『解构不失真』；\n"
+                "3）【演化引擎】辩证算子（识矛盾，对冲强度 > θ1）、交叉算子（跨学科合成假说）、筛选算子（基于证据强度、引用与可证伪潜力 > θ2 优胜劣汰）。"
+            ),
+            structural_skeleton_guide=(
+                "对于任何设计科学（Design Science）或理论架构类论文，均可借鉴作者的『三位一体架构骨架』：\n"
+                "【形式化效用函数（为什么有效）】 + 【最小状态表示元组（数据长什么样）】 + 【状态转移算子（系统怎么动起来）】。"
+            )
+        ),
+
+        # Stage 6
+        StageBlueprint(
+            stage_number=6,
+            stage_code="credibility_and_boundaries",
+            title="第 6 关：可信与边界（魔鬼代言人 / 挑刺局）",
+            subtitle="切换为最苛刻的反对派审稿人，预判自动化系统的灾难性风险并设计机制级刹车",
+            paradigm_focus="内嵌于架构之中的技术治理协议（防幻觉校验、防算法霸权僵化、细粒度权属激励、包容性界面）",
+            forbidden_demands=["严禁接受『加强法律法规监管』『提升用户道德素养』这类空洞套话，必须给出机制级对策"],
+            opening_prompt_template=(
+                "假设你的 {{第5关设计方案}} 明天就上线了，而且运转得非常高效。现在请你切换成‘最苛刻的反对派审稿人’："
+                "这套高度自动化的系统，最可能引发什么灾难性的伦理、逻辑或垄断风险？你准备给它装上什么‘刹车机制’？"
+            ),
+            opening_formula_breakdown=None,
+            options_type_label="风险治理选择题（四维刹车机制切面）",
+            options=[
+                ChoiceOption(
+                    key="A",
+                    dimension="防逻辑幻觉",
+                    text="机器自己推演胡说八道怎么办？（需要锚定客观物理/实验事实 + 人类专家分层终审）。",
+                    follow_up_hook="如果 AI 算子在两个知识单元之间自动推演出一条看似完美、实则违背真实物理世界或实验数据的『学术幻觉』，你的系统如何在不拖垮效率的前提下分层拦截它？"
+                ),
+                ChoiceOption(
+                    key="B",
+                    dimension="防算法霸权与同质化",
+                    text="系统只推高分主流观点，把冷门但有潜力的创新思想当噪声删了怎么办？",
+                    follow_up_hook="这是自动化筛选算子最致命的悖论！如果系统只按引用率和主流一致性打分，爱因斯坦早期的非主流假说会不会刚冒头就被当成『高熵噪声』直接抹杀了？你准备在算法里留什么保护区或扰动机制？"
+                ),
+                ChoiceOption(
+                    key="C",
+                    dimension="防商业与版权垄断",
+                    text="大出版商不愿意开放数据，或细粒度知识被无偿掠夺导致学者停止分享怎么办？",
+                    follow_up_hook="当文献被拆解成微观知识单元并在全网重组时，传统的『整篇论文引用』已经失效了。你如何在底层设计一套自动溯源与微观信用结算机制？"
+                ),
+                ChoiceOption(
+                    key="D",
+                    dimension="防数字鸿沟与偏见",
+                    text="资源匮乏地区或非专业读者用不起/看不懂高复杂度系统，加剧认知不平等怎么办？",
+                    follow_up_hook="高阶知识系统往往容易沦为少数精英的专利。你如何在认知交互界面上做分层适配，让不同认知起点的用户都能平等获益？"
+                ),
+                ChoiceOption(
+                    key="E",
+                    dimension="自定义风险与刹车",
+                    text="其他（自行指出系统潜在灾难性风险与机制级对策）。",
+                    follow_up_hook="请确保你给出的对策是『内嵌在系统架构里的具体协议或参数机制』，而不是泛泛呼吁外部监管。"
+                ),
+            ],
+            diagnostic_rubrics=[
+                DiagnosticRubricItem(
+                    rubric_id="s6_r1",
+                    criterion="是否指出了与第 5 关自动化机制直接相关的深层内生风险（如幻觉自循环、主流霸权僵化、产权失灵）？",
+                    probe_prompt="请你站在最犀利的审稿人立场：你第 5 关设计的自动化机制越成功、跑得越快，哪一种副作用就会被同步放大？"
+                ),
+                DiagnosticRubricItem(
+                    rubric_id="s6_r2",
+                    criterion="是否给出了对应的『机制级/协议级』刹车对策（而非空喊『需要加强监管和伦理规范』）？",
+                    probe_prompt="『加强伦理规范与人工监管』是所有论文都能写的万金油套话。如果让你把刹车直接焊死在第 5 关的系统代码或协议里，你会增加什么具体的校验环、保护分区或控制参数？"
+                ),
+            ],
+            expert_anchors=build_expert_anchors_for_stage(doc, 6),
+            same_topic_comparison_guide=(
+                "对照论文 Point 08 与 Point 75：作者设计了四道硬核的机制级刹车：\n"
+                "1）【防幻觉】构建世界 1—2—3 闭环校验协议（W123-CVP），在三算子中设置客观物理世界（W1）实验数据锚定与人类主观世界（W2）专家分层审计；\n"
+                "2）【防算法同质化】专门设置『防僵化机制（随机扰动比例）』与『争议知识分区（激活阈值）』，保护非主流潜在颠覆性创新；\n"
+                "3）【防产权失灵】提出 ICSP 协议，将知识产权细化至原子级，通过逻辑指纹自动溯源并结算原始贡献者信用点；\n"
+                "4）【防认知鸿沟】提出设计『包容性认知界面』（Point 75）。"
+            ),
+            structural_skeleton_guide=(
+                "优秀的系统设计论文绝不回避负面风险，而是采用『内生风险识别 → 架构级治理协议嵌入』的论证骨架，"
+                "将原本可能被审稿人攻击的软肋，直接转化为论文的核心创新点（Point 08）。"
+            )
+        ),
+
+        # Stage 7
+        StageBlueprint(
+            stage_number=7,
+            stage_code="validation_planning",
+            title="第 7 关：验证研究（如何证明它不是空中楼阁？）",
+            subtitle="针对概念与架构设计，规划诚实、可落地的分阶段验证路线并划定适用边界",
+            paradigm_focus="设计科学（Design Science）验证与演进规划：工程压测评估、学术联盟分阶段试点、参数工程化校准与默会知识边界切割",
+            forbidden_demands=["严禁因为没有现成实验数据而编造虚假实验", "严禁将概念公式未赋具体数值当作学术造假"],
+            opening_prompt_template=(
+                "你的方案目前还是一个纸面设计。如果审稿人质疑：‘想法很宏大，但你怎么证明它真的有效、且在真实世界里跑得动？’"
+                "针对你这套方案，你会设计怎样的验证与落地路线？（如果存在目前还解决不了的硬伤，也可以直接坦白）。"
+            ),
+            opening_formula_breakdown=None,
+            options_type_label="验证路径选择题（四维落地与边界切面）",
+            options=[
+                ChoiceOption(
+                    key="A",
+                    dimension="工程规模压力测试",
+                    text="在千万级数据规模下测试算力瓶颈、存储架构与响应延迟的权衡。",
+                    follow_up_hook="非常务实的工程验证！当知识单元从百万级篇幅裂变到千万甚至上亿级细粒度节点时，你预计哪一个环节最容易遇到算力瓶颈？"
+                ),
+                ChoiceOption(
+                    key="B",
+                    dimension="分阶段生态试点",
+                    text="先找小范围学术联盟做自愿标准试点，达到一定规模后再通过市场与政策推广。",
+                    follow_up_hook="制度落地最忌一步登天。你规划的『学术共同体自愿试点 → 市场机制激励 → 政策标准演进』三阶段路线中，第一批种子用户最适合选谁？"
+                ),
+                ChoiceOption(
+                    key="C",
+                    dimension="人机协同参数校准",
+                    text="找领域专家做小样本基准标注，结合真实场景去校准概念公式里的权重与阈值参数。",
+                    follow_up_hook="诚实交代概念公式中的阈值参数（如冲突阈值、筛选权重）需要后续工程化校准，体现了严谨的科学态度。你准备先选哪个垂直学科做参数校准试验田？"
+                ),
+                ChoiceOption(
+                    key="D",
+                    dimension="边界承认与切割",
+                    text="明确划定本方案目前不适用于哪些特殊知识类型（如默会知识、具身认知、审美体验），留待后续研究。",
+                    follow_up_hook="主动划定理论适用边界不是示弱，而是顶刊论文成熟的标志！为什么你的结构化方案能够处理显性命题知识，却很难直接处理『默会知识』或『具身体验』？"
+                ),
+                ChoiceOption(
+                    key="E",
+                    dimension="自定义验证路线",
+                    text="其他（自行设计验证方案与局限声明）。",
+                    follow_up_hook="请说明你的验证方案如何与第 5 关的核心设计一一对应，并坦诚指出 1–2 个当前尚未解决的局限。"
+                ),
+            ],
+            diagnostic_rubrics=[
+                DiagnosticRubricItem(
+                    rubric_id="s7_r1",
+                    criterion="验证与落地路线是否与第 5 关的设计方案及『设计科学』范式相匹配？",
+                    probe_prompt="针对你在第 5 关设计的系统架构与协议，如果让你设计未来 1–3 年的工程验证与生态推广路线，你会分哪几个阶段推进？"
+                ),
+                DiagnosticRubricItem(
+                    rubric_id="s7_r2",
+                    criterion="是否诚实识别并声明了自己方案的 1–2 个核心局限或适用边界（如算力开销、参数未定、特殊知识不适用）？",
+                    probe_prompt="没有任何一项研究能包打天下。在你设计的这套系统中，有哪些知识类型（比如难以言传的经验、艺术审美）或工程开销是它目前还啃不下来的？"
+                ),
+            ],
+            expert_anchors=build_expert_anchors_for_stage(doc, 7),
+            same_topic_comparison_guide=(
+                "对照论文 Point 75 与 Point 76：作者极其坦诚且严谨地规划了四大验证与边界方向：\n"
+                "1）【知识类型边界】明确声明对『默会知识、具身认知』的适用性需另文探讨（Point 76）；\n"
+                "2）【工程算力瓶颈】指出 SAM 结构尚未考虑算力瓶颈，需在千万级规模下评估算力瓶颈与响应延迟的权衡（Point 76）；\n"
+                "3）【三阶段制度落地】ICSP 协议分『共同体（学术图书馆联盟自愿标准，联合 OpenAlex/Semantic Scholar）—市场—政策』三阶段实施并通过案例研究验证（Point 75/76）；\n"
+                "4）【参数工程化校准】明确指出公式权重、随机扰动比例与争议分区激活阈值等具体参数优化需后续工程化研究（Point 65/75/76）。"
+            ),
+            structural_skeleton_guide=(
+                "在概念与设计科学论文的结尾，高水平作者从不伪造实证数据，而是通过『理论适用边界切割 + 工程复杂度坦白 + 分阶段路线图』"
+                "将局限性转化为清晰的未来研究议程（Research Agenda）。"
+            )
+        ),
+
+        # Stage 8
+        StageBlueprint(
+            stage_number=8,
+            stage_code="reflection_and_innovation",
+            title="第 8 关：反思创新（双轨对照与终稿产出）",
+            subtitle="解锁完整论文论证链，双轨对比『我的独立方案 vs. 论文专家路径』，完成吸收与超越",
+            paradigm_focus="双轨可视化对比视图（ResearchState vs. expert_argument_map）与独立科研构思报告导出",
+            forbidden_demands=["绝不以与论文作者观点的一致度作为评分标准"],
+            opening_prompt_template=(
+                "这是你独立完成的完整研究构思，旁边是黄晨教授基于同一背景构建的《面向知识熵减的智慧图书馆：Lib3范式研究》。"
+                "请对比两条路径：\n"
+                "1. 你的方案在哪个环节比论文更贴近现实落地，或切入了论文没顾及的盲区？\n"
+                "2. 如果允许你从论文中‘借走’一个最打动你的机制（如 SAM 三元组、辩证/交叉/筛选算子、W123-CVP 校验或 ICSP 协议）来升级你的方案，你会借哪一个，准备怎么改？"
+            ),
+            opening_formula_breakdown=None,
+            options_type_label="双轨反思切入视角",
+            options=[
+                ChoiceOption(
+                    key="A",
+                    dimension="借用数据结构 (SAM)",
+                    text="借用论文的 SAM 三元组（语义特征向量 L_sig + 多维语境指针 P_context + 可信度权重 θ）来强化我的底层知识表示。",
+                    follow_up_hook="如果把 SAM 三元组嫁接到你的方案里，你会保留它的哪一部分，又会针对你关注的算力或业务场景对它做怎样的精简或改造？"
+                ),
+                ChoiceOption(
+                    key="B",
+                    dimension="借用演化算子与净负熵公式",
+                    text="借用论文的『净负熵贡献率 ΔN 公式』或『辩证—交叉—筛选三大算子』来升级我的系统运行逻辑。",
+                    follow_up_hook="论文用遗传算法类比三大算子非常精妙。结合你的研究设想，你认为其中哪个算子在当前大模型技术下最容易率先落地，哪个算子还需要改造？"
+                ),
+                ChoiceOption(
+                    key="C",
+                    dimension="借用治理与激励协议 (W123-CVP / ICSP)",
+                    text="借用论文的『W123-CVP 闭环校验协议』或『ICSP 原子级版权结算协议』来补齐我的风险治理短板。",
+                    follow_up_hook="很好！如果你把『防僵化随机扰动』或『原子级逻辑指纹结算』引入你的方案，你会如何设计它的第一步最小可行原型（MVP）？"
+                ),
+                ChoiceOption(
+                    key="D",
+                    dimension="坚持并深化我的独立分支",
+                    text="我认为我的方案在工程可行性、用户认知交互或特定场景落地上比原论文更具优势，准备沿着我的独立路径深化。",
+                    follow_up_hook="非常有底气的批判性判断！请具体总结：相比于论文宏大的操作系统设想，你的方案在哪个切口上更聚焦、更容易在短期内取得实证或工程突破？"
+                ),
+                ChoiceOption(
+                    key="E",
+                    dimension="综合融合与批判超越",
+                    text="其他（综合对比两条路径的优劣，提出全新的融合架构或后续研究命题）。",
+                    follow_up_hook="请总结你的最终科研构思修订方案，系统将为你生成《个人科研构思报告》与《双轨论证路径对照图》。"
+                ),
+            ],
+            diagnostic_rubrics=[
+                DiagnosticRubricItem(
+                    rubric_id="s8_r1",
+                    criterion="是否识别出了自身方案与原论文在切入角度、理论透镜或机制落地性上的独特互补点？",
+                    probe_prompt="不要急着否定自己去迎合论文作者！请仔细对比：你的方案里有哪些贴近实际痛点或独特视角的巧思，反而是原论文没有重点展开的？"
+                ),
+                DiagnosticRubricItem(
+                    rubric_id="s8_r2",
+                    criterion="是否基于批判性思考，有理有据地吸收了论文中的某一机制（或指出了论文的局限并给出了改进设想）？",
+                    probe_prompt="如果你要对自己的方案做最后一次『终稿升级』，你会从原论文的论证链中吸收哪一个结构或协议，并做怎样的本土化改造？"
+                ),
+            ],
+            expert_anchors=build_expert_anchors_for_stage(doc, 8),
+            same_topic_comparison_guide=(
+                "全链条同题对照：从『资源容器的认知带宽冲突（Point 01）』→『知识元三重局限（Point 72）』→"
+                "『波普尔世界 3 + 知识熵 + 遗传算法（Point 03）』→『自迭代操作系统与净负熵判据（Point 02/71）』→"
+                "『公式(1)-(4) + SAM 三元组 + 三大算子（Point 32/61-68）』→『W123-CVP + ICSP + 防僵化分区（Point 08/75）』→"
+                "『默会知识边界与千万级算力验证（Point 76）』。"
+            ),
+            structural_skeleton_guide=(
+                "双轨思维骨架对照：左侧为你独立构建的 7 关因果论证链，右侧为论文重构的学术论证路径。"
+                "真正的高手不仅看作者得出了什么结论，更看作者如何严丝合缝地完成『痛点—缺口—理论—命题—机制—边界—验证』的七步闭环。"
+            )
+        ),
+    ]
+
+    violations = audit_and_scrub_spoilers(stages, doc.spoiler_blacklist[:15])
+    now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+    return TrainingBlueprint(
+        blueprint_id=f"bp_golden_{doc.document_id}",
+        document_id=doc.document_id,
+        paper_id=doc.paper_id,
+        generated_by="本地四步逆向出题引擎 v2.0 (内置黄金标准蓝图 + 支持 DeepSeek API 实时动态生成)",
+        generated_at=now_str,
+        research_paradigm=doc.research_paradigm,
+        paradigm_adaptation_note=(
+            "读取 Point 04 = 设计科学 (Design Science)、Worker_D_methods/results = not_applicable、"
+            "Worker_D_formulas = reported (概念公式 1–4) → 第 5 关自动定调为『人工制品/数据结构与核心演化机制设计』，"
+            "第 7 关自动定调为『工程规模压测、三阶段生态试点与理论边界划定』，严禁强求问卷或统计显著性 p 值。"
+        ),
+        spoiler_blacklist=doc.spoiler_blacklist,
+        stages=stages,
+        spoiler_audit_passed=(len(violations) == 0),
+        spoiler_violations=violations
+    )

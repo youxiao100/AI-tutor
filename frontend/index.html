@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>引导式科研思维训练系统 v2.0 — 数据清洗与四步动态出题引擎工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background-color: #0b0f19;
+      color: #e2e8f0;
+    }
+    .serif-title {
+      font-family: 'Noto Serif SC', serif;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.82);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+    .slot-badge {
+      display: inline-block;
+      padding: 1px 8px;
+      margin: 0 3px;
+      border-radius: 6px;
+      background: rgba(245, 158, 11, 0.18);
+      border: 1px solid rgba(245, 158, 11, 0.55);
+      color: #fcd34d;
+      font-weight: 600;
+      font-size: 0.88em;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Header -->
+  <header class="border-b border-slate-800 bg-slate-950/90 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-amber-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">
+          L3
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-lg font-bold tracking-tight text-white">引导式科研思维训练系统</h1>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+              v2.0 出题引擎工作台
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5" id="header-paper-title">正在加载论文标注 JSON...</p>
+        </div>
+      </div>
+
+      <!-- Actions: API Key, Upload JSON & Golden Blueprint vs DeepSeek Live Regenerate -->
+      <div class="flex flex-wrap items-center gap-2">
+        <input type="password" id="deepseek-api-key-input" placeholder="输入 DeepSeek API Key (可选，默认读环境变量)" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 w-56 focus:outline-none focus:border-indigo-500" />
+
+        <label class="cursor-pointer px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          <span>上传论文 JSON</span>
+          <input type="file" id="json-upload-input" accept=".json" class="hidden" onchange="handleUploadJson(event)" />
+        </label>
+
+        <button onclick="handleRestoreGoldenBlueprint()" class="px-3 py-2 rounded-lg bg-emerald-950/80 hover:bg-emerald-900/80 text-xs font-semibold text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1.5" title="加载程序内置的 v2.0 黄金标准 8 关出题蓝图">
+          <span>🏛️ 加载内置 v2.0 标准 8 关蓝图</span>
+        </button>
+
+        <button id="btn-generate-all" onclick="handleGenerateFullBlueprint()" class="px-3.5 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-semibold text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-1.5" title="调用 DeepSeek API 测试动态逆向出题引擎">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>DeepSeek API 动态出题测试</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex gap-1 border-t border-slate-800/80 pt-1">
+      <button onclick="switchMainTab('blueprint')" id="tab-btn-blueprint" class="px-4 py-2.5 text-xs font-semibold border-b-2 border-indigo-500 text-indigo-300 transition flex items-center gap-1.5">
+        <span>🎯 四步动态出题引擎 & 8 关训练蓝图</span>
+      </button>
+      <button onclick="switchMainTab('adapter')" id="tab-btn-adapter" class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+        <span>🧹 JSON 体检、冲突拦截与引文清洗</span>
+        <span id="badge-conflict-count" class="px-1.5 py-0.2 text-[10px] rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">0</span>
+      </button>
+      <button onclick="switchMainTab('spoiler')" id="tab-btn-spoiler" class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+        <span>🛡️ 剧透防火墙 (Spoiler Guard) 与案发现场隔离</span>
+      </button>
+      <button onclick="switchMainTab('prompts')" id="tab-btn-prompts" class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+        <span>⚙️ 逆向出题 System Prompt 检视</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Global Status Toast -->
+  <div id="status-banner" class="hidden bg-indigo-950/90 border-b border-indigo-500/40 px-4 py-2.5 text-center text-xs text-indigo-200 flex items-center justify-center gap-2">
+    <svg class="animate-spin h-4 w-4 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+    </svg>
+    <span id="status-banner-text">正在调用 DeepSeek API 动态构建 8 关训练蓝图...</span>
+  </div>
+
+  <!-- Main Workspace Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+
+    <!-- ========================================================== -->
+    <!-- TAB 1: 8-STAGE DYNAMIC QUESTION BUILDER & BLUEPRINT STUDIO -->
+    <!-- ========================================================== -->
+    <section id="tab-content-blueprint" class="space-y-6">
+      <!-- Top Summary Bar: Paradigm + Micro-session Slice Filter + Spoiler Audit Status -->
+      <div class="glass-card rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-4">
+          <div>
+            <div class="text-[11px] uppercase tracking-wider text-slate-400">识别研究范式 (Point 04)</div>
+            <div class="text-sm font-bold text-emerald-400 mt-0.5" id="bp-paradigm-display">设计科学 (Design Science)</div>
+          </div>
+          <div class="h-8 w-px bg-slate-800"></div>
+          <div>
+            <div class="text-[11px] uppercase tracking-wider text-slate-400">剧透防火墙审计 (第 1–7 关)</div>
+            <div class="text-xs font-semibold mt-0.5" id="bp-spoiler-audit-badge">检测中...</div>
+          </div>
+          <div class="h-8 w-px bg-slate-800"></div>
+          <div>
+            <div class="text-[11px] uppercase tracking-wider text-slate-400">生成引擎来源</div>
+            <div class="text-xs text-slate-300 mt-0.5" id="bp-generated-meta">-</div>
+          </div>
+        </div>
+
+        <!-- Micro-session slice switcher (Section 2.1) -->
+        <div class="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-lg border border-slate-800">
+          <span class="text-[11px] text-slate-400 px-2">训练模式切片：</span>
+          <button onclick="filterMicroSession('all')" id="ms-btn-all" class="px-2.5 py-1 rounded text-xs font-medium bg-indigo-600 text-white transition">
+            全流程 (1–8关)
+          </button>
+          <button onclick="filterMicroSession('breakthrough')" id="ms-btn-breakthrough" class="px-2.5 py-1 rounded text-xs font-medium text-slate-300 hover:bg-slate-800 transition">
+            破题局 (1–2关)
+          </button>
+          <button onclick="filterMicroSession('architecture')" id="ms-btn-architecture" class="px-2.5 py-1 rounded text-xs font-medium text-slate-300 hover:bg-slate-800 transition">
+            架构局 (3–5关)
+          </button>
+          <button onclick="filterMicroSession('devil')" id="ms-btn-devil" class="px-2.5 py-1 rounded text-xs font-medium text-slate-300 hover:bg-slate-800 transition">
+            挑刺局 (6–7关)
+          </button>
+        </div>
+      </div>
+
+      <!-- Paradigm Adaptation Note -->
+      <div class="bg-indigo-950/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-xs text-indigo-200 flex items-start gap-2.5">
+        <span class="text-base leading-none">🧭</span>
+        <div>
+          <span class="font-semibold text-indigo-300">跨范式自适应定调说明：</span>
+          <span id="bp-paradigm-note">正在读取范式定调信息...</span>
+        </div>
+      </div>
+
+      <!-- Main Split Layout: Left 8-Stage Timeline | Right Active Stage Inspector & Interactive Simulator -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left Sidebar: 8 Stages Navigation -->
+        <div class="lg:col-span-3 space-y-2" id="stages-nav-list">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Right Detail Pane: Active Stage Question, 4D Options, Diagnostic Rubrics, Slot Simulator & Expert Anchors -->
+        <div class="lg:col-span-9 space-y-5" id="active-stage-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- TAB 2: JSON HEALTH CHECK, CONFLICT INTERCEPTION & QUOTES   -->
+    <!-- ========================================================== -->
+    <section id="tab-content-adapter" class="hidden space-y-6">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="adapter-stats-grid"></div>
+
+      <!-- Quality Flags & Gate vs Point Conflicts -->
+      <div class="glass-card rounded-xl p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>🚨 上游 JSON 交叉体检与冲突降级报告 (Section 3.1)</span>
+          </h2>
+          <span class="text-xs text-slate-400">自动执行 Gate vs. Point 校验与 v2.facts 回退合并</span>
+        </div>
+        <div id="quality-flags-list" class="space-y-2.5"></div>
+      </div>
+
+      <!-- Quote Sanitization Diff Table -->
+      <div class="glass-card rounded-xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-bold text-white">✨ 展示级引文清洗对比 (raw_quote vs. display_quote)</h2>
+            <p class="text-xs text-slate-400 mt-0.5">自动清除 PDF 解析断行符 (\n)、规范公式排版，并对半截断句首尾自动补齐省略号 (……)</p>
+          </div>
+          <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+            <input type="checkbox" id="filter-newline-quotes" checked onchange="renderQuotesTable()" class="rounded border-slate-700 bg-slate-900 text-indigo-500" />
+            <span>仅显示含异常换行符 (\n) 的清洗样本</span>
+          </label>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2.5 px-3 w-32">证据 ID / 偏移量</th>
+                <th class="py-2.5 px-3">原始引文 (raw_quote — 保留原貌用于偏移量溯源)</th>
+                <th class="py-2.5 px-3">清洗后展示引文 (display_quote — 专家对照前端渲染)</th>
+              </tr>
+            </thead>
+            <tbody id="quotes-diff-tbody" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- All 76 Points 3-State Semantics Matrix -->
+      <div class="glass-card rounded-xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-bold text-white">📊 76 项标注点位三态语义分布 (reported / not_reported / not_applicable)</h2>
+            <p class="text-xs text-slate-400 mt-0.5">严格区分「未提取到 (not_reported)」与「范式不适用 (not_applicable)」，防止将非实证论文判为缺陷</p>
+          </div>
+        </div>
+        <div id="points-matrix-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 text-xs"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- TAB 3: SPOILER FIREWALL & CRIME SCENE ISOLATION            -->
+    <!-- ========================================================== -->
+    <section id="tab-content-spoiler" class="hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left: Crime Scene Materials (Allowed in Stage 1) -->
+        <div class="glass-card rounded-xl p-5 space-y-4 border-emerald-500/30">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">允许使用</span>
+              <h2 class="text-sm font-bold text-white mt-1">🔍 案发现场原料 (Point 06 研究情境 & Point 01 问题陈述)</h2>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400">在生成第 1 关开场题时，系统仅允许读取以下宏观背景与现实冲突，还原「未解决的学术案发现场」：</p>
+          <div id="crime-scene-list" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Right: Spoiler Blacklist (Forbidden in Explore/Probe/Choose) -->
+        <div class="glass-card rounded-xl p-5 space-y-4 border-rose-500/30">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">探索期严禁泄露</span>
+              <h2 class="text-sm font-bold text-white mt-1">🚫 破案手法剧透黑名单 (Spoiler Blacklist)</h2>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400">自动从 Point 05（自造术语）、Point 08（核心创新点）、Point 03（特定理论名）及公式算子提取。支持随时增删并实时重跑剧透审计：</p>
+          <div class="flex gap-2">
+            <input type="text" id="new-spoiler-input" placeholder="输入需拉黑的专有名词（如 Lib3、W123-CVP）..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500" />
+            <button onclick="addSpoilerTerm()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-semibold text-white transition">
+              + 添加黑名单术语
+            </button>
+          </div>
+          <div id="spoiler-tags-container" class="flex flex-wrap gap-2 pt-1"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- TAB 4: SYSTEM PROMPT & USER PROMPT INSPECTOR               -->
+    <!-- ========================================================== -->
+    <section id="tab-content-prompts" class="hidden space-y-6">
+      <div class="glass-card rounded-xl p-5 space-y-4">
+        <h2 class="text-sm font-bold text-white">🧠 四步逆向动态出题引擎 System Prompt (实时注入剧透防火墙与范式规则)</h2>
+        <pre id="preview-system-prompt" class="bg-slate-950 border border-slate-800 rounded-lg p-4 text-xs text-slate-300 whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto"></pre>
+      </div>
+      <div class="glass-card rounded-xl p-5 space-y-4">
+        <h2 class="text-sm font-bold text-white">📥 注入的结构化论文数据 User Prompt</h2>
+        <pre id="preview-user-prompt" class="bg-slate-950 border border-slate-800 rounded-lg p-4 text-xs text-slate-300 whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto"></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    let APP_STATE = {
+      document: null,
+      blueprint: null,
+      prompts_preview: null,
+      activeStageNum: 1,
+      microSessionFilter: 'all',
+      simulatedPreviousOutput: ''
+    };
+
+    async function fetchState() {
+      try {
+        const res = await fetch('/api/state');
+        const data = await res.json();
+        APP_STATE.document = data.document;
+        APP_STATE.blueprint = data.blueprint;
+        APP_STATE.prompts_preview = data.prompts_preview;
+        renderAll();
+      } catch (err) {
+        console.error('Failed to load state:', err);
+      }
+    }
+
+    function switchMainTab(tabName) {
+      ['blueprint', 'adapter', 'spoiler', 'prompts'].forEach(t => {
+        const content = document.getElementById(`tab-content-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tabName) {
+          content.classList.remove('hidden');
+          btn.classList.add('border-indigo-500', 'text-indigo-300');
+          btn.classList.remove('border-transparent', 'text-slate-400');
+        } else {
+          content.classList.add('hidden');
+          btn.classList.remove('border-indigo-500', 'text-indigo-300');
+          btn.classList.add('border-transparent', 'text-slate-400');
+        }
+      });
+    }
+
+    function showStatus(text) {
+      const banner = document.getElementById('status-banner');
+      document.getElementById('status-banner-text').innerText = text;
+      banner.classList.remove('hidden');
+    }
+
+    function hideStatus() {
+      document.getElementById('status-banner').classList.add('hidden');
+    }
+
+    function formatPromptWithSlots(text) {
+      if (!text) return '';
+      let escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      // Highlight {{...}} dynamic student output slots
+      return escaped.replace(/\{\{([^}]+)\}\}/g, (match, slotName) => {
+        if (APP_STATE.simulatedPreviousOutput && APP_STATE.simulatedPreviousOutput.trim() !== '') {
+          return `<span class="slot-badge" title="动态插槽 ${match} 已填入模拟学生产出">💡 ${APP_STATE.simulatedPreviousOutput.trim()}</span>`;
+        }
+        return `<span class="slot-badge">{{${slotName}}}</span>`;
+      });
+    }
+
+    function filterMicroSession(mode) {
+      APP_STATE.microSessionFilter = mode;
+      ['all', 'breakthrough', 'architecture', 'devil'].forEach(m => {
+        const btn = document.getElementById(`ms-btn-${m}`);
+        if (m === mode) {
+          btn.className = 'px-2.5 py-1 rounded text-xs font-medium bg-indigo-600 text-white transition';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded text-xs font-medium text-slate-300 hover:bg-slate-800 transition';
+        }
+      });
+      const allowed = getAllowedStagesForFilter(mode);
+      if (!allowed.includes(APP_STATE.activeStageNum)) {
+        APP_STATE.activeStageNum = allowed[0];
+      }
+      renderBlueprintTab();
+    }
+
+    function getAllowedStagesForFilter(mode) {
+      if (mode === 'breakthrough') return [1, 2];
+      if (mode === 'architecture') return [3, 4, 5];
+      if (mode === 'devil') return [6, 7];
+      return [1, 2, 3, 4, 5, 6, 7, 8];
+    }
+
+    function renderAll() {
+      if (!APP_STATE.document) return;
+      const doc = APP_STATE.document;
+      document.getElementById('header-paper-title').innerText =
+        `当前论文：《${doc.paper_id}》 ｜ 范式：${doc.paradigm_display} ｜ 已提取 ${doc.stats.total_claims} 条核心事实 & ${doc.stats.total_evidence} 条清洗引文`;
+
+      document.getElementById('badge-conflict-count').innerText = doc.quality_flags.length;
+
+      renderBlueprintTab();
+      renderAdapterTab();
+      renderSpoilerTab();
+      renderPromptsTab();
+    }
+
+    function renderBlueprintTab() {
+      const doc = APP_STATE.document;
+      const bp = APP_STATE.blueprint;
+      document.getElementById('bp-paradigm-display').innerText = doc.paradigm_display;
+
+      if (!bp || !bp.stages || bp.stages.length === 0) {
+        document.getElementById('bp-spoiler-audit-badge').innerHTML =
+          `<span class="text-amber-400">尚未生成 8 关蓝图</span>`;
+        document.getElementById('bp-generated-meta').innerText = '点击右上角「DeepSeek 实时重生成 8 关蓝图」立即生成';
+        document.getElementById('stages-nav-list').innerHTML = '';
+        document.getElementById('active-stage-container').innerHTML = `
+          <div class="glass-card rounded-xl p-10 text-center space-y-4">
+            <div class="text-base font-bold text-white">尚未加载或正在后台生成 8 关训练蓝图</div>
+            <p class="text-xs text-slate-400">点击下方按钮立即调用 DeepSeek API 实时运行四步动态出题引擎</p>
+            <button onclick="handleGenerateFullBlueprint()" class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white">
+              ⚡ 立即调用 DeepSeek 生成 8 关动态训练蓝图
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('bp-paradigm-note').innerText = bp.paradigm_adaptation_note || '';
+      document.getElementById('bp-generated-meta').innerText = `${bp.generated_by} (${bp.generated_at})`;
+
+      if (bp.spoiler_audit_passed) {
+        document.getElementById('bp-spoiler-audit-badge').innerHTML =
+          `<span class="text-emerald-400 flex items-center gap-1">✅ 已通过（第 1–7 关零剧透词泄露）</span>`;
+      } else {
+        document.getElementById('bp-spoiler-audit-badge').innerHTML =
+          `<span class="text-rose-400 flex items-center gap-1" title="${bp.spoiler_violations.join('; ')}">⚠️ 检测到 ${bp.spoiler_violations.length} 处剧透词告警</span>`;
+      }
+
+      // Render Left Stage Nav
+      const allowedStages = getAllowedStagesForFilter(APP_STATE.microSessionFilter);
+      const navHtml = bp.stages.map(st => {
+        const isAllowed = allowedStages.includes(st.stage_number);
+        const isActive = st.stage_number === APP_STATE.activeStageNum;
+        const opacityClass = isAllowed ? '' : 'opacity-35';
+        const activeClass = isActive
+          ? 'bg-indigo-600/25 border-indigo-500 text-white shadow-md shadow-indigo-500/10'
+          : 'bg-slate-900/70 border-slate-800 text-slate-300 hover:bg-slate-800/70';
+
+        return `
+          <button onclick="selectStage(${st.stage_number})" class="w-full text-left p-3 rounded-xl border transition flex items-start gap-3 ${activeClass} ${opacityClass}">
+            <div class="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center text-xs font-bold ${isActive ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-slate-400'}">
+              ${st.stage_number}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="text-xs font-bold truncate">${st.title.replace(/^第\s*\d+\s*关[：:]\s*/, '')}</div>
+              <div class="text-[11px] text-slate-400 truncate mt-0.5">${st.subtitle || st.stage_code}</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+      document.getElementById('stages-nav-list').innerHTML = navHtml;
+
+      // Render Right Active Stage Detail
+      const st = bp.stages.find(s => s.stage_number === APP_STATE.activeStageNum) || bp.stages[0];
+      renderActiveStageDetail(st);
+    }
+
+    function selectStage(num) {
+      APP_STATE.activeStageNum = num;
+      renderBlueprintTab();
+    }
+
+    function renderActiveStageDetail(st) {
+      const container = document.getElementById('active-stage-container');
+
+      // Formula breakdown badge for Stage 1
+      let formulaHtml = '';
+      if (st.stage_number === 1 && st.opening_formula_breakdown) {
+        const fb = st.opening_formula_breakdown;
+        formulaHtml = `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mt-3 pt-3 border-t border-slate-800/80 text-xs">
+            <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+              <span class="text-[10px] font-bold uppercase text-indigo-400 block">1. 具体决策角色</span>
+              <span class="text-slate-200 mt-0.5 block">${fb.role || '-'}</span>
+            </div>
+            <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+              <span class="text-[10px] font-bold uppercase text-amber-400 block">2. 反直觉的现实矛盾</span>
+              <span class="text-slate-200 mt-0.5 block">${fb.counter_intuitive_conflict || '-'}</span>
+            </div>
+            <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+              <span class="text-[10px] font-bold uppercase text-emerald-400 block">3. 聚焦的诊断提问</span>
+              <span class="text-slate-200 mt-0.5 block">${fb.diagnostic_question || '-'}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Dynamic Slot Simulator for Stages 2-7
+      let slotSimulatorHtml = '';
+      if (st.stage_number >= 2 && st.stage_number <= 7) {
+        slotSimulatorHtml = `
+          <div class="bg-amber-950/20 border border-amber-500/30 rounded-xl p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-amber-300 flex items-center gap-1.5">
+                <span>🔗 第四步：动态衔接插槽模拟器 (Student Output Slot Assembly)</span>
+              </span>
+              <span class="text-[11px] text-amber-200/70">输入学生上一关确认的研究产出，实时预览动态题干拼装或让 DeepSeek 重新定制本关</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="sim-prev-output-input" value="${APP_STATE.simulatedPreviousOutput.replace(/"/g, '&quot;')}"
+                oninput="updateSimulatedSlot(this.value)"
+                placeholder="例如：文献仍以整篇为单位堆放，缺乏能够保留上下文脉络的细粒度知识关联机制..."
+                class="flex-1 bg-slate-900/90 border border-amber-500/40 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400" />
+              <button onclick="updateSimulatedSlot('')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">
+                重置插槽
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Options HTML
+      const optionsHtml = (st.options || []).map(opt => `
+        <div class="bg-slate-900/80 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-3.5 transition space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-md bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 font-bold text-xs flex items-center justify-center">
+                ${opt.key}
+              </span>
+              <span class="text-xs font-bold text-indigo-300">${opt.dimension}</span>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400">等权学术切面</span>
+          </div>
+          <p class="text-xs text-slate-200 leading-relaxed pl-8">${opt.text}</p>
+          <div class="ml-8 bg-indigo-950/30 border-l-2 border-indigo-500 pl-3 py-1.5 text-[11px] text-indigo-200">
+            <span class="font-semibold text-indigo-400">🎯 预设苏格拉底追问钩子 (Follow-up Hook)：</span>
+            <span>${opt.follow_up_hook}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Diagnostic Rubrics HTML
+      const rubricsHtml = (st.diagnostic_rubrics || []).map((rub, idx) => `
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              逻辑安检门 #${idx + 1}
+            </span>
+            <span class="text-xs font-bold text-white">${rub.criterion}</span>
+          </div>
+          <p class="text-xs text-slate-300 pl-1">
+            <span class="text-slate-400 font-medium">未通过时的精准追问话术 (PROBE)：</span>
+            “${rub.probe_prompt}”
+          </p>
+        </div>
+      `).join('');
+
+      // Expert Anchors HTML
+      const anchorsHtml = (st.expert_anchors || []).map(anc => `
+        <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-3 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/40">
+              Point ${anc.point} · ${anc.label}
+            </span>
+            <span class="text-[10px] text-slate-500 font-mono">${anc.claim_id}</span>
+          </div>
+          <div class="text-xs font-medium text-slate-200">${anc.summary}</div>
+          ${anc.display_quote ? `
+            <div class="text-[11px] text-slate-400 bg-slate-950/80 px-2.5 py-1.5 rounded border border-slate-800/80 italic">
+              原文清洗引文：“${anc.display_quote}”
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+
+      container.innerHTML = `
+        <!-- Stage Header & Live Single-Stage Co-Design Bar -->
+        <div class="glass-card rounded-xl p-5 space-y-4">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                  Stage ${st.stage_number} / 8
+                </span>
+                <h2 class="text-lg font-bold text-white serif-title">${st.title}</h2>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">${st.subtitle || ''} ${st.paradigm_focus ? `｜ 范式侧重：${st.paradigm_focus}` : ''}</p>
+            </div>
+          </div>
+
+          ${slotSimulatorHtml}
+
+          <!-- Opening Question Prompt Box -->
+          <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-indigo-500/40 rounded-xl p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
+                ${st.stage_number === 1 ? '🔥 具象张力三段式开场开放题 [OPEN]' : '🔄 动态插槽衔接开放题 [OPEN]'}
+              </span>
+              <span class="text-[11px] text-slate-400">探索期已加载剧透防火墙</span>
+            </div>
+            <blockquote class="text-sm sm:text-base text-white font-medium leading-relaxed" id="stage-opening-prompt-display">
+              “${formatPromptWithSlots(st.opening_prompt_template)}”
+            </blockquote>
+            ${formulaHtml}
+          </div>
+
+          <!-- Interactive Single-Stage DeepSeek Tuning Bar -->
+          <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3.5 space-y-2">
+            <div class="text-xs font-semibold text-slate-300 flex items-center justify-between">
+              <span>🛠️ 与 AI 协同调优本关题目 (Single-Stage Live Co-Design)</span>
+              <span class="text-[11px] text-slate-400">对本关题干张力、选项维度或安检门有新想法？直接输入指令让 DeepSeek 重写本关</span>
+            </div>
+            <div class="flex flex-wrap sm:flex-nowrap gap-2">
+              <input type="text" id="stage-tune-instruction"
+                placeholder="输入调优要求，例如：把第1关的决策角色改成『国家科技图书文献中心主任』，或者让选项C更聚焦青年博士生的文献阅读痛点..."
+                class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+              <button onclick="handleRegenerateSingleStage(${st.stage_number})" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition whitespace-nowrap flex items-center gap-1.5">
+                <span>⚡ DeepSeek 重写本关</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: 4-Dimensional Equal-Weight Choice Options -->
+        <div class="glass-card rounded-xl p-5 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-white">🧭 ${st.options_type_label || '四维等权学术切面选择题'} [SCAFFOLD_CHOICE]</h3>
+              <p class="text-xs text-slate-400 mt-0.5">当学生连续 2 轮表述笼统重复时弹出；4 个维度学术价值完全平等，各绑定专属追问钩子</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 gap-3">
+            ${optionsHtml}
+          </div>
+        </div>
+
+        <!-- Step 4: Logical Security Gates (Diagnostic Rubrics) -->
+        <div class="glass-card rounded-xl p-5 space-y-3.5">
+          <div>
+            <h3 class="text-sm font-bold text-white">🛡️ 本关逻辑安检门清单 (Diagnostic Rubrics) [EXPLORE / PROBE]</h3>
+            <p class="text-xs text-slate-400 mt-0.5">AI 导师只针对学生未通过的那一条安检项发起单点追问；一旦通过立刻放行进入阶段产出总结，绝不机械凑轮数</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            ${rubricsHtml}
+          </div>
+        </div>
+
+        <!-- Layered Expert Comparison (COMPARE Stage) -->
+        <div class="glass-card rounded-xl p-5 space-y-4 border-purple-500/30">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-white">📚 关底分层专家对照锚点 (Layered Expert Comparison) [COMPARE]</h3>
+              <p class="text-xs text-slate-400 mt-0.5">仅在学生确认本关独立产出后解锁；根据学生路径偏离度自动切换「同题对照」或「思维骨架对照」</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-3.5 space-y-1">
+              <div class="font-bold text-emerald-300">🟢 模式 A：同题对照 (Same-Topic Comparison)</div>
+              <p class="text-slate-300 leading-relaxed">${st.same_topic_comparison_guide || '当学生研究方向与论文相近时，直接对比双方在具体概念、理论透镜与机制设计上的异同。'}</p>
+            </div>
+            <div class="bg-amber-950/20 border border-amber-500/30 rounded-xl p-3.5 space-y-1">
+              <div class="font-bold text-amber-300">🟠 模式 B：思维骨架对照 (Structural Skeleton Comparison)</div>
+              <p class="text-slate-300 leading-relaxed">${st.structural_skeleton_guide || '当学生选择了与原论文截然不同的分支时，明确告知其选题独立于原论文，转为对照作者拆解论证的思维骨架。'}</p>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="text-xs font-semibold text-slate-300">绑定的本关论文清洗后证据锚点 (${(st.expert_anchors || []).length} 条)：</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              ${anchorsHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateSimulatedSlot(val) {
+      APP_STATE.simulatedPreviousOutput = val;
+      const st = APP_STATE.blueprint.stages.find(s => s.stage_number === APP_STATE.activeStageNum);
+      if (st) {
+        const el = document.getElementById('stage-opening-prompt-display');
+        if (el) {
+          el.innerHTML = `“${formatPromptWithSlots(st.opening_prompt_template)}”`;
+        }
+        const inputEl = document.getElementById('sim-prev-output-input');
+        if (inputEl && inputEl.value !== val) {
+          inputEl.value = val;
+        }
+      }
+    }
+
+    async function handleRestoreGoldenBlueprint() {
+      showStatus('正在加载程序内置的 v2.0 黄金标准 8 关训练蓝图...');
+      try {
+        const res = await fetch('/api/reset-golden-blueprint', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ document_id: APP_STATE.document.document_id })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          APP_STATE.blueprint = data.blueprint;
+          renderAll();
+        }
+      } catch (e) {
+        alert('加载失败: ' + e.message);
+      } finally {
+        hideStatus();
+      }
+    }
+
+    async function handleGenerateFullBlueprint() {
+      const apiKey = document.getElementById('deepseek-api-key-input')?.value?.trim() || null;
+      showStatus('正在调用 DeepSeek API (双并发批次) 实时逆向还原 8 关动态训练蓝图，约需 15–20 秒...');
+      const btn = document.getElementById('btn-generate-all');
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+      try {
+        const res = await fetch('/api/generate-blueprint', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            document_id: APP_STATE.document.document_id,
+            api_key: apiKey
+          })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          alert('生成失败: ' + (err.detail || res.statusText));
+        } else {
+          const data = await res.json();
+          APP_STATE.blueprint = data.blueprint;
+          renderAll();
+        }
+      } catch (e) {
+        alert('请求异常: ' + e.message);
+      } finally {
+        hideStatus();
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+      }
+    }
+
+    async function handleRegenerateSingleStage(stageNum) {
+      const apiKey = document.getElementById('deepseek-api-key-input')?.value?.trim() || null;
+      const instruction = document.getElementById('stage-tune-instruction')?.value || '';
+      const prevOutput = APP_STATE.simulatedPreviousOutput || '';
+      showStatus(`正在调用 DeepSeek API 实时重写第 ${stageNum} 关...`);
+      try {
+        const res = await fetch('/api/regenerate-stage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            document_id: APP_STATE.document.document_id,
+            stage_number: stageNum,
+            teacher_instruction: instruction,
+            previous_stage_student_output: prevOutput,
+            api_key: apiKey
+          })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          alert('单关重写失败: ' + (err.detail || res.statusText));
+        } else {
+          const data = await res.json();
+          APP_STATE.blueprint = data.blueprint;
+          renderBlueprintTab();
+        }
+      } catch (e) {
+        alert('请求异常: ' + e.message);
+      } finally {
+        hideStatus();
+      }
+    }
+
+    async function handleUploadJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('file', file);
+      showStatus(`正在上传并清洗《${file.name}》...`);
+      try {
+        const res = await fetch('/api/upload-json', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert('上传失败: ' + (data.detail || res.statusText));
+          hideStatus();
+          return;
+        }
+        await fetchState();
+        // Automatically trigger DeepSeek blueprint generation for new paper
+        await handleGenerateFullBlueprint();
+      } catch (e) {
+        alert('上传异常: ' + e.message);
+        hideStatus();
+      }
+    }
+
+    function renderAdapterTab() {
+      const doc = APP_STATE.document;
+      const s = doc.stats;
+      document.getElementById('adapter-stats-grid').innerHTML = `
+        <div class="glass-card rounded-xl p-4">
+          <div class="text-xs text-slate-400">76 项点位三态统计</div>
+          <div class="text-lg font-bold text-white mt-1">
+            <span class="text-emerald-400">${s.reported_points_count} 已报告</span> /
+            <span class="text-amber-400">${s.not_reported_points_count} 未报告</span> /
+            <span class="text-slate-500">${s.not_applicable_points_count} 不适用</span>
+          </div>
+        </div>
+        <div class="glass-card rounded-xl p-4">
+          <div class="text-xs text-slate-400">v2.facts 混合回退补齐</div>
+          <div class="text-lg font-bold text-indigo-300 mt-1">
+            v2 覆盖 ${s.v2_covered_points.length} 点 + 回退补齐 ${s.fallback_covered_points.length} 点
+          </div>
+        </div>
+        <div class="glass-card rounded-xl p-4">
+          <div class="text-xs text-slate-400">清洗异常断行引文数</div>
+          <div class="text-lg font-bold text-amber-300 mt-1">
+            ${s.quotes_with_abnormal_newlines_cleaned} / ${s.total_evidence} 条引文已修复
+          </div>
+        </div>
+        <div class="glass-card rounded-xl p-4">
+          <div class="text-xs text-slate-400">提取剧透黑名单术语</div>
+          <div class="text-lg font-bold text-rose-400 mt-1">
+            ${doc.spoiler_blacklist.length} 个核心专有词
+          </div>
+        </div>
+      `;
+
+      // Quality Flags
+      document.getElementById('quality-flags-list').innerHTML = doc.quality_flags.map(qf => {
+        const badgeColor = qf.severity === 'warning'
+          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+          : 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40';
+        return `
+          <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded text-xs font-mono font-bold border ${badgeColor}">${qf.flag_code}</span>
+              <span class="text-xs text-slate-400">触发源：${qf.gate_name || qf.point}</span>
+            </div>
+            <p class="text-xs text-slate-200">${qf.description}</p>
+            <p class="text-xs text-emerald-400">💡 工程对策：${qf.suggestion}</p>
+          </div>
+        `;
+      }).join('');
+
+      renderQuotesTable();
+
+      // 76 points matrix
+      const pts = Object.values(doc.point_statuses);
+      document.getElementById('points-matrix-grid').innerHTML = pts.map(p => {
+        let color = 'bg-slate-900/50 border-slate-800/80 text-slate-500';
+        if (p.status === 'reported') color = 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300';
+        if (p.status === 'not_reported') color = 'bg-amber-950/40 border-amber-500/40 text-amber-300';
+        return `
+          <div class="p-2 rounded-lg border ${color} flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="font-mono font-bold">#${p.point}</span>
+              <span class="text-[10px] opacity-80">${p.status}</span>
+            </div>
+            <div class="truncate font-medium mt-1" title="${p.label}">${p.label}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderQuotesTable() {
+      const doc = APP_STATE.document;
+      const onlyNewline = document.getElementById('filter-newline-quotes')?.checked;
+      const evList = Object.values(doc.evidence).filter(ev => !onlyNewline || ev.raw_quote.includes('\n'));
+
+      document.getElementById('quotes-diff-tbody').innerHTML = evList.map(ev => {
+        const highlightedRaw = ev.raw_quote
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/\n/g, '<span class="px-1 py-0.2 mx-0.5 rounded bg-rose-500/30 text-rose-300 font-mono">\\n</span>');
+        return `
+          <tr class="hover:bg-slate-900/50">
+            <td class="py-2.5 px-3 font-mono text-slate-400">
+              <div>${ev.evidence_ref}</div>
+              <div class="text-[10px] text-slate-500">[${ev.offset_start || '-'}..${ev.offset_end || '-'}]</div>
+            </td>
+            <td class="py-2.5 px-3 text-slate-300 font-mono text-[11px]">${highlightedRaw}</td>
+            <td class="py-2.5 px-3 text-emerald-300 font-medium">${ev.display_quote}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderSpoilerTab() {
+      const doc = APP_STATE.document;
+      document.getElementById('crime-scene-list').innerHTML = doc.crime_scene_materials.map(c => {
+        const ev = c.evidence_refs.length > 0 ? doc.evidence[c.evidence_refs[0]] : null;
+        return `
+          <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-3 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400">Point ${c.point} · ${c.label}</span>
+              <span class="text-[10px] text-slate-500 font-mono">${c.source_path}</span>
+            </div>
+            <div class="text-xs text-slate-200">${c.content}</div>
+            ${ev ? `<div class="text-[11px] text-slate-400 italic">引文：“${ev.display_quote}”</div>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('spoiler-tags-container').innerHTML = doc.spoiler_blacklist.map((term, idx) => `
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-rose-950/60 text-rose-200 border border-rose-500/40 flex items-center gap-1.5">
+          <span>${term}</span>
+          <button onclick="removeSpoilerTerm(${idx})" class="text-rose-400 hover:text-white font-bold">×</button>
+        </span>
+      `).join('');
+    }
+
+    async function addSpoilerTerm() {
+      const input = document.getElementById('new-spoiler-input');
+      const val = input.value.trim();
+      if (!val) return;
+      const list = [...APP_STATE.document.spoiler_blacklist];
+      if (!list.includes(val)) {
+        list.unshift(val);
+        await saveBlacklist(list);
+      }
+      input.value = '';
+    }
+
+    async function removeSpoilerTerm(idx) {
+      const list = [...APP_STATE.document.spoiler_blacklist];
+      list.splice(idx, 1);
+      await saveBlacklist(list);
+    }
+
+    async function saveBlacklist(newList) {
+      const res = await fetch('/api/update-blacklist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          document_id: APP_STATE.document.document_id,
+          spoiler_blacklist: newList
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        APP_STATE.document.spoiler_blacklist = data.spoiler_blacklist;
+        if (data.blueprint) APP_STATE.blueprint = data.blueprint;
+        renderAll();
+      }
+    }
+
+    function renderPromptsTab() {
+      if (!APP_STATE.prompts_preview) return;
+      document.getElementById('preview-system-prompt').innerText = APP_STATE.prompts_preview.system_prompt;
+      document.getElementById('preview-user-prompt').innerText = APP_STATE.prompts_preview.user_prompt;
+    }
+
+    window.addEventListener('DOMContentLoaded', fetchState);
+  </script>
+</body>
+</html>

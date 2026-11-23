@@ -1,0 +1,2868 @@
+{
+  "schema_version": "lis-mas-v0.1",
+  "paper_id": "面向知识熵减的智慧图书馆：Lib3范式研究_黄晨",
+  "doc_sha256": "b754b2aabebddcb3858fbdabd6c6218e6a46e5ffc769efd8b962459555332b0b",
+  "point_annotations": {
+    "10": {
+      "point": "10",
+      "label": "子库",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "11": {
+      "point": "11",
+      "label": "检索式",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "12": {
+      "point": "12",
+      "label": "检索字段",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "13": {
+      "point": "13",
+      "label": "检索日期",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "14": {
+      "point": "14",
+      "label": "时间范围",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "15": {
+      "point": "15",
+      "label": "文献类型",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "16": {
+      "point": "16",
+      "label": "语种限制",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "17": {
+      "point": "17",
+      "label": "初检记录数",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "18": {
+      "point": "18",
+      "label": "去重信息",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "19": {
+      "point": "19",
+      "label": "纳入排除标准",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "20": {
+      "point": "20",
+      "label": "最终语料数",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    },
+    "21": {
+      "point": "21",
+      "label": "目标总体",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "22": {
+      "point": "22",
+      "label": "抽样方法",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "23": {
+      "point": "23",
+      "label": "被试特征",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "24": {
+      "point": "24",
+      "label": "实验分组",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "25": {
+      "point": "25",
+      "label": "工具或量表来源",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "26": {
+      "point": "26",
+      "label": "量表结构",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "27": {
+      "point": "27",
+      "label": "应答与回收",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "28": {
+      "point": "28",
+      "label": "无效样本排除",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "29": {
+      "point": "29",
+      "label": "有效参与者数",
+      "agent": "Worker_B",
+      "status": "not_applicable",
+      "items": []
+    },
+    "30": {
+      "point": "30",
+      "label": "文本预处理",
+      "agent": "Worker_C",
+      "status": "not_reported",
+      "items": []
+    },
+    "31": {
+      "point": "31",
+      "label": "停用词表",
+      "agent": "Worker_C",
+      "status": "not_reported",
+      "items": []
+    },
+    "32": {
+      "point": "32",
+      "label": "特征表示",
+      "agent": "Worker_C",
+      "status": "reported",
+      "items": [
+        {
+          "value": "提出语义特征向量(Lsig)作为知识原子的核心命题逻辑表示",
+          "quote": "语义特征向量(Lsig)是知识原子的逻辑身份证,代表其核心命题逻辑。",
+          "kind": null,
+          "start": 14264,
+          "end": 14298
+        }
+      ]
+    },
+    "33": {
+      "point": "33",
+      "label": "知识组织工具或映射",
+      "agent": "Worker_C",
+      "status": "not_reported",
+      "items": []
+    },
+    "34": {
+      "point": "34",
+      "label": "同义归并",
+      "agent": "Worker_C",
+      "status": "not_reported",
+      "items": []
+    },
+    "35": {
+      "point": "35",
+      "label": "定性编码方法",
+      "agent": "Worker_C",
+      "status": "not_applicable",
+      "items": []
+    },
+    "36": {
+      "point": "36",
+      "label": "编码者信息",
+      "agent": "Worker_C",
+      "status": "not_applicable",
+      "items": []
+    },
+    "37": {
+      "point": "37",
+      "label": "编码一致性",
+      "agent": "Worker_C",
+      "status": "not_applicable",
+      "items": []
+    },
+    "38": {
+      "point": "38",
+      "label": "分歧处理",
+      "agent": "Worker_C",
+      "status": "not_applicable",
+      "items": []
+    },
+    "39": {
+      "point": "39",
+      "label": "算法",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "40": {
+      "point": "40",
+      "label": "基线模型",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "41": {
+      "point": "41",
+      "label": "算法改动",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "42": {
+      "point": "42",
+      "label": "超参数",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "43": {
+      "point": "43",
+      "label": "调参策略",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "44": {
+      "point": "44",
+      "label": "阈值",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "45": {
+      "point": "45",
+      "label": "软件工具",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "46": {
+      "point": "46",
+      "label": "硬件环境",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "47": {
+      "point": "47",
+      "label": "随机种子",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "48": {
+      "point": "48",
+      "label": "数据划分",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "49": {
+      "point": "49",
+      "label": "重复运行次数",
+      "agent": "Worker_D_methods",
+      "status": "not_applicable",
+      "items": []
+    },
+    "50": {
+      "point": "50",
+      "label": "评价指标",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "51": {
+      "point": "51",
+      "label": "指标截断值",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "52": {
+      "point": "52",
+      "label": "信效度",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "53": {
+      "point": "53",
+      "label": "模型拟合指标",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "54": {
+      "point": "54",
+      "label": "描述统计",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "55": {
+      "point": "55",
+      "label": "统计检验",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "56": {
+      "point": "56",
+      "label": "检验统计量",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "57": {
+      "point": "57",
+      "label": "显著性水平",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "58": {
+      "point": "58",
+      "label": "效应量与置信区间",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "59": {
+      "point": "59",
+      "label": "最优结果标识",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "60": {
+      "point": "60",
+      "label": "错误分析",
+      "agent": "Worker_D_results",
+      "status": "not_applicable",
+      "items": []
+    },
+    "61": {
+      "point": "61",
+      "label": "公式编号与名称",
+      "agent": "Worker_D_formulas",
+      "status": "reported",
+      "items": [
+        {
+          "value": "公式(1)为有效通量函数",
+          "quote": "如公式(1)所示的有效通量函数:",
+          "kind": null,
+          "start": 6187,
+          "end": 6203
+        },
+        {
+          "value": "公式(2)为净负熵贡献率(ΔN)的算法化度量",
+          "quote": "作为对知识管理干预效能的算法化度量(见公式(2)):",
+          "kind": null,
+          "start": 7450,
+          "end": 7476
+        },
+        {
+          "value": "公式(3)定义SAM三元组",
+          "quote": "三元组(见公式(3)):",
+          "kind": null,
+          "start": 14131,
+          "end": 14143
+        },
+        {
+          "value": "公式(4)为ψAI驱动的负熵功",
+          "quote": "驱动的负熵功(见公式(4)):",
+          "kind": null,
+          "start": 17980,
+          "end": 17995
+        }
+      ]
+    },
+    "62": {
+      "point": "62",
+      "label": "公式表达式",
+      "agent": "Worker_D_formulas",
+      "status": "reported",
+      "items": [
+        {
+          "value": "公式(1)表达式：F = Φ / [E × (Cacquisition+Ccognition)]",
+          "quote": "F =\nΦ\nE× (Cacquisition+Ccognition )\n(1)",
+          "kind": null,
+          "start": 6204,
+          "end": 6243
+        },
+        {
+          "value": "公式(2)表达式：ΔN = ΔF / Emanagement = (Fafter-Fbefore) / Emanagement",
+          "quote": "ΔN=\nΔF\nEmanagement\n=\nFafter-Fbefore\nEmanagement\n(2)",
+          "kind": null,
+          "start": 7477,
+          "end": 7528
+        },
+        {
+          "value": "公式(3)表达式：A = (Lsig,Pcontext,θ)",
+          "quote": "A = (Lsig,Pcontext,θ )\n(3)",
+          "kind": null,
+          "start": 14234,
+          "end": 14260
+        },
+        {
+          "value": "公式(4)表达式：Flib3 = (Φ×ψAI) / [E × (Cacquisition+Ccognition)]",
+          "quote": "Flib3 =\nΦ×ψAI\nE× (Cacquisition+Ccognition )\n(4)",
+          "kind": null,
+          "start": 17996,
+          "end": 18043
+        }
+      ]
+    },
+    "63": {
+      "point": "63",
+      "label": "输入变量",
+      "agent": "Worker_D_formulas",
+      "status": "reported",
+      "items": [
+        {
+          "value": "Φ为信息通量，指单位时间内流经系统的有效信息量",
+          "quote": "Φ(信息通量,Information\n \nFlux)指单位时间内流经系统的有效信息量",
+          "kind": null,
+          "start": 6301,
+          "end": 6343
+        },
+        {
+          "value": "E为熵/噪声，指系统中无关、冗余或错误信息的总量",
+          "quote": "E(熵/ 噪声,Entropy / Noise)指系统中无关、冗余或错误信息的总量",
+          "kind": null,
+          "start": 6357,
+          "end": 6398
+        },
+        {
+          "value": "Cacquisition为获取成本，Ccognition为认知成本，分别对应资源获取成本与逻辑验证的认知成本",
+          "quote": "Cacquisition(获取成本)和Ccognition(认知成本)分别代表资源获取成本与逻辑验证的认\n知成本。",
+          "kind": null,
+          "start": 6425,
+          "end": 6482
+        },
+        {
+          "value": "ΔF表示有效通量增益",
+          "quote": "有效通量增益(ΔF)",
+          "kind": null,
+          "start": 7600,
+          "end": 7610
+        },
+        {
+          "value": "公式(2)分母变量为Emanagement",
+          "quote": "ΔN=\nΔF\nEmanagement",
+          "kind": null,
+          "start": 7477,
+          "end": 7495
+        },
+        {
+          "value": "正文将系统复杂度熵增拼作Emanagment",
+          "quote": "系统复杂度熵增(Emanagment)之比",
+          "kind": null,
+          "start": 7619,
+          "end": 7640
+        },
+        {
+          "value": "公式(2)中ΔF由Fafter-Fbefore构成",
+          "quote": "Fafter-Fbefore",
+          "kind": null,
+          "start": 7498,
+          "end": 7512
+        },
+        {
+          "value": "Lsig为语义特征向量",
+          "quote": "语义特征向量(Lsig)是知识原子的逻辑身份证",
+          "kind": null,
+          "start": 14264,
+          "end": 14287
+        },
+        {
+          "value": "Pcontext为多维语境指针",
+          "quote": "多维语境指针(Pcontext)是实现“解构不失真”的关键。",
+          "kind": null,
+          "start": 14425,
+          "end": 14455
+        },
+        {
+          "value": "θ为多维可信度权重",
+          "quote": "多维可信度权重(θ) 记录该原子的“逻辑指纹”",
+          "kind": null,
+          "start": 14576,
+          "end": 14599
+        },
+        {
+          "value": "ψAI代表AI算子做功强度，即知识净增量",
+          "quote": "ψAI 代表AI 算子的做功强度",
+          "kind": null,
+          "start": 18053,
+          "end": 18069
+        },
+        {
+          "value": "公式(4)输入变量包括Flib3、Φ、ψAI、E、Cacquisition、Ccognition",
+          "quote": "Flib3 =\nΦ×ψAI\nE× (Cacquisition+Ccognition )",
+          "kind": null,
+          "start": 17996,
+          "end": 18039
+        }
+      ]
+    },
+    "64": {
+      "point": "64",
+      "label": "变量数值与来源",
+      "agent": "Worker_D_formulas",
+      "status": "not_reported",
+      "items": []
+    },
+    "65": {
+      "point": "65",
+      "label": "权重方案",
+      "agent": "Worker_D_formulas",
+      "status": "reported",
+      "items": [
+        {
+          "value": "θ为多维可信度权重，记录逻辑指纹",
+          "quote": "多维可信度权重(θ) 记录该原子的“逻辑指纹”",
+          "kind": null,
+          "start": 14576,
+          "end": 14599
+        },
+        {
+          "value": "θ包括来源权威度、实证数据锚点及W123-CVP循环中的校验历史",
+          "quote": "包括来源权威度、实证数据锚\n点以及在W123-CVP 循环中的校验历史。",
+          "kind": null,
+          "start": 14601,
+          "end": 14637
+        },
+        {
+          "value": "筛选算子以证据强度、引用频率和逻辑一致性为权重依据",
+          "quote": "基于证据强度、引用频率和逻辑一致性",
+          "kind": null,
+          "start": 10868,
+          "end": 10885
+        },
+        {
+          "value": "逼真度算法综合可证伪潜力、批判强度、解释广度进行动态评估",
+          "quote": "综合“可证伪\n潜力”“批判强度”“解释广度”进行动态评估",
+          "kind": null,
+          "start": 19393,
+          "end": 19421
+        },
+        {
+          "value": "辩证算子以对冲强度>θ1判定高强度互斥",
+          "quote": "对冲强度>θ1",
+          "kind": null,
+          "start": 10446,
+          "end": 10453
+        },
+        {
+          "value": "筛选算子以评分>预设阈值θ2进行判定",
+          "quote": "评分>预设阈值θ2?",
+          "kind": null,
+          "start": 11571,
+          "end": 11581
+        },
+        {
+          "value": "ψAI是公式(4)中的增益变量",
+          "quote": "它不仅是公式中的一个增益变量",
+          "kind": null,
+          "start": 18109,
+          "end": 18123
+        },
+        {
+          "value": "具体参数优化需后续工程化研究，未给出可复算的具体权重数值",
+          "quote": "具体参数优化需后续工程化研究。",
+          "kind": null,
+          "start": 15425,
+          "end": 15440
+        }
+      ]
+    },
+    "66": {
+      "point": "66",
+      "label": "变换算子",
+      "agent": "Worker_D_formulas",
+      "status": "reported",
+      "items": [
+        {
+          "value": "辩证算子自动识别并标记知识原子之间的逻辑冲突与矛盾",
+          "quote": "辩证算子。自动识别并标记知识原子之间的逻辑冲突与矛盾",
+          "kind": null,
+          "start": 10192,
+          "end": 10218
+        },
+        {
+          "value": "交叉算子跨越学科边界，将不同领域原理创造性结合",
+          "quote": "跨越学科边界,主动尝试将不同领域的原理进行创造性结合。",
+          "kind": null,
+          "start": 10630,
+          "end": 10657
+        },
+        {
+          "value": "筛选算子基于证据强度、引用频率和逻辑一致性运作",
+          "quote": "基于证据强度、引用频率和逻辑一致性",
+          "kind": null,
+          "start": 10868,
+          "end": 10885
+        },
+        {
+          "value": "ψAI代表AI算子的做功强度",
+          "quote": "ψAI 代表AI 算子的做功强度",
+          "kind": null,
+          "start": 18053,
+          "end": 18069
+        },
+        {
+          "value": "公式(2)使用Fafter-Fbefore的差值以及ΔF/Emanagement的除法",
+          "quote": "ΔF\nEmanagement\n=\nFafter-Fbefore\nEmanagement",
+          "kind": null,
+          "start": 7481,
+          "end": 7524
+        },
+        {
+          "value": "公式(4)在分子中引入ψAI乘子",
+          "quote": "Φ×ψAI",
+          "kind": null,
+          "start": 18004,
+          "end": 18009
+        }
+      ]
+    },
+    "67": {
+      "point": "67",
+      "label": "中间计算值",
+      "agent": "Worker_D_formulas",
+      "status": "not_reported",
+      "items": []
+    },
+    "68": {
+      "point": "68",
+      "label": "作者声称的输出",
+      "agent": "Worker_D_formulas",
+      "status": "reported",
+      "items": [
+        {
+          "value": "公式(1)输出F为有效通量",
+          "quote": "有效通量(F)",
+          "kind": null,
+          "start": 6261,
+          "end": 6268
+        },
+        {
+          "value": "公式(2)输出ΔN，用作知识管理干预效能的算法化度量",
+          "quote": "(ΔN),作为对知识管理干预效能的算法化度量(见公式(2)):",
+          "kind": null,
+          "start": 7445,
+          "end": 7476
+        },
+        {
+          "value": "公式(3)输出A，即SAM三元组",
+          "quote": "A = (Lsig,Pcontext,θ )",
+          "kind": null,
+          "start": 14234,
+          "end": 14256
+        },
+        {
+          "value": "公式(4)输出Flib3",
+          "quote": "Flib3 =\nΦ×ψAI",
+          "kind": null,
+          "start": 17996,
+          "end": 18009
+        },
+        {
+          "value": "作者声称只有当净负熵为正时，管理行为才具备负熵意义上的合法性",
+          "quote": "只有当净负熵为正时",
+          "kind": null,
+          "start": 7641,
+          "end": 7650
+        }
+      ]
+    },
+    "69": {
+      "point": "69",
+      "label": "假设或命题结局",
+      "agent": "Router",
+      "status": "not_applicable",
+      "items": []
+    },
+    "70": {
+      "point": "70",
+      "label": "主要发现",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "作者论证系统瓶颈从信息不足转向有序性不足",
+          "quote": "系统瓶颈从“信息不足”彻底转向\n“有序性不足”———人类无法从噪声洪流中快速提取可行动的知识。",
+          "kind": null,
+          "start": 6543,
+          "end": 6590
+        },
+        {
+          "value": "三大算子构成Lib3的知识有序化引擎",
+          "quote": "三大算子构成了Lib3 的“知识有序化引擎”",
+          "kind": null,
+          "start": 11138,
+          "end": 11160
+        },
+        {
+          "value": "W123-CVP在三算子中设置分层审计机制",
+          "quote": "W123-CVP 协议在三算子中设置分层审计机制",
+          "kind": null,
+          "start": 16548,
+          "end": 16572
+        },
+        {
+          "value": "ICSP通过逻辑指纹自动溯源并结算原始贡献者信用点",
+          "quote": "系统通过逻辑指纹自动\n溯源并结算其原始贡献者的信用点",
+          "kind": null,
+          "start": 18458,
+          "end": 18484
+        },
+        {
+          "value": "图书馆被设想为摆脱物理或虚拟目的地身份限制的形态",
+          "quote": "图书馆摆脱了物理或虚拟“目的地” 的身份限制",
+          "kind": null,
+          "start": 20710,
+          "end": 20732
+        }
+      ]
+    },
+    "71": {
+      "point": "71",
+      "label": "关系方向",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "认知成本的急剧增长会使有效通量F衰减",
+          "quote": "与认知成本的急剧增长使有效通量(F)实际衰减",
+          "kind": null,
+          "start": 6520,
+          "end": 6542
+        },
+        {
+          "value": "AI算子强度在公式中作为增益变量",
+          "quote": "它不仅是公式中的一个增益变量",
+          "kind": null,
+          "start": 18109,
+          "end": 18123
+        },
+        {
+          "value": "管理行为只有在净负熵为正时才具备负熵意义上的合法性",
+          "quote": "只有当净负熵为正时",
+          "kind": null,
+          "start": 7641,
+          "end": 7650
+        }
+      ]
+    },
+    "72": {
+      "point": "72",
+      "label": "文献对照",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "作者将知识原子化与既有“知识元”概念及“细粒度知识抽取”方法并置",
+          "quote": "“知识元”概念[16]、余丽等发展的“细粒度知识抽取”方法[17]",
+          "kind": null,
+          "start": 12376,
+          "end": 12409
+        },
+        {
+          "value": "作者指出现有知识元/细粒度抽取方案存在三重局限",
+          "quote": "然而,这些方案存在三重局限",
+          "kind": null,
+          "start": 12427,
+          "end": 12440
+        },
+        {
+          "value": "作者用表2比较传统图书馆、数字图书馆与Lib3/知识管理逻辑驱动的智慧图书馆三级演化",
+          "quote": "表2　图书馆形态的三级演化",
+          "kind": null,
+          "start": 17424,
+          "end": 17437
+        }
+      ]
+    },
+    "73": {
+      "point": "73",
+      "label": "引文功能",
+      "agent": "Router",
+      "status": "not_reported",
+      "items": []
+    },
+    "74": {
+      "point": "74",
+      "label": "理论含义",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "理论主张图书馆本体论应架构于知识管理之上",
+          "quote": "图书馆的本体论应架构于知识管理之上",
+          "kind": null,
+          "start": 4980,
+          "end": 4997
+        },
+        {
+          "value": "Lib3被理论化为客观知识世界的自迭代操作系统",
+          "quote": "Lib3 的本质,是为客观知识世界安装一套自迭代操作系统",
+          "kind": null,
+          "start": 8817,
+          "end": 8845
+        },
+        {
+          "value": "图书馆被设想为叠加在现实世界之上的泛在语义层",
+          "quote": "一个叠加在现实世界之上的、无处不在的“泛在语义层”",
+          "kind": null,
+          "start": 20739,
+          "end": 20764
+        }
+      ]
+    },
+    "75": {
+      "point": "75",
+      "label": "实践含义",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "实践上要求图书馆从管理文献转向管理原子化知识",
+          "quote": "图书馆必须实现从“管理文献” 到“管理原子化知识” 的飞跃。",
+          "kind": null,
+          "start": 8733,
+          "end": 8763
+        },
+        {
+          "value": "ICSP提出三阶段实施路径，初期由学术图书馆联盟制定自愿性语义注入标准",
+          "quote": "ICSP 可分三阶段实施:初期可以由学术图书馆联盟制定自愿性语义注入标准",
+          "kind": null,
+          "start": 18706,
+          "end": 18742
+        },
+        {
+          "value": "提出应设计包容性认知界面",
+          "quote": "Lib3\n \n还应设计“包容性认知界面”",
+          "kind": null,
+          "start": 20223,
+          "end": 20243
+        },
+        {
+          "value": "防僵化机制的随机扰动比例与争议分区激活阈值被列为可配置参数",
+          "quote": "防僵化机制的随机扰动比例、争议分区的激活阈值",
+          "kind": null,
+          "start": 20080,
+          "end": 20102
+        }
+      ]
+    },
+    "76": {
+      "point": "76",
+      "label": "局限与未来工作",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "默会知识、具身认知的适用性需另文探讨",
+          "quote": "对默会知识、具\n身认知的适用性需另文探讨",
+          "kind": null,
+          "start": 21182,
+          "end": 21202
+        },
+        {
+          "value": "工程规模验证需评估算力瓶颈与响应延迟的权衡",
+          "quote": "以评估算力瓶颈与响应延迟的权衡",
+          "kind": null,
+          "start": 21284,
+          "end": 21299
+        },
+        {
+          "value": "ICSP三阶段实施路径需通过案例研究",
+          "quote": "三阶段实施路径(共同体—市场—政策) 需通过案例研究",
+          "kind": null,
+          "start": 21318,
+          "end": 21344
+        },
+        {
+          "value": "具体参数优化需后续工程化研究",
+          "quote": "具体参数优化需后续工程化研究。",
+          "kind": null,
+          "start": 15425,
+          "end": 15440
+        },
+        {
+          "value": "SAM结构未考虑算力瓶颈",
+          "quote": "由于此结构并未考虑算力瓶颈",
+          "kind": null,
+          "start": 15905,
+          "end": 15918
+        }
+      ]
+    },
+    "01": {
+      "point": "01",
+      "label": "研究问题或问题陈述",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "传统“资源容器”型图书馆以存储与检索效率为核心，但面对客观知识指数增长已力不从心",
+          "quote": "传统图书馆作为“资源容器” 的管理模式,核心目标是优化信息的存储与检索",
+          "kind": null,
+          "start": 4376,
+          "end": 4411
+        },
+        {
+          "value": "传统模式不能有效缓解有限认知带宽与无限信息供给之间的冲突",
+          "quote": "有效缓解人类有限认知带宽与无限信息供给之间的冲突",
+          "kind": null,
+          "start": 4450,
+          "end": 4474
+        },
+        {
+          "value": "信息冗余本身成为新的熵增负担，加剧系统混乱与认知过载",
+          "quote": "成为一种新的熵增负担①,加剧系统的混乱与认知过载。",
+          "kind": null,
+          "start": 4489,
+          "end": 4514
+        },
+        {
+          "value": "既有智慧图书馆探索多聚焦技术增强的服务优化，尚未触及知识组织的第一性原理重构",
+          "quote": "尚未触及知识组织的第一性原理重构。",
+          "kind": null,
+          "start": 4829,
+          "end": 4846
+        },
+        {
+          "value": "破解认知带宽与信息供给冲突，需要从物理资源管控转向逻辑知识管理",
+          "quote": "从物理层面的资源管控向逻辑层面的知识管理的深度转向。",
+          "kind": null,
+          "start": 4885,
+          "end": 4911
+        }
+      ]
+    },
+    "02": {
+      "point": "02",
+      "label": "研究假设或定性命题",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "图书馆的本体论应建立在知识管理之上",
+          "quote": "图书馆的本体论应架构于知识管理之上",
+          "kind": "qualitative_proposition",
+          "start": 4980,
+          "end": 4997
+        },
+        {
+          "value": "Lib3被界定为客观知识世界的自迭代操作系统",
+          "quote": "Lib3 的本质,是为客观知识世界安装一套自迭代操作系统",
+          "kind": "qualitative_proposition",
+          "start": 8817,
+          "end": 8845
+        }
+      ]
+    },
+    "03": {
+      "point": "03",
+      "label": "理论框架",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "Lib3范式以波普尔世界3理论为基础，试图构建具备自我更新能力的操作系统",
+          "quote": "该范式基于波普尔世界3 理论,试图构建一套具备自我更新能力\n的",
+          "kind": null,
+          "start": 5358,
+          "end": 5389
+        },
+        {
+          "value": "知识熵减诉求被置于跨越半个世纪的学术脉络中",
+          "quote": "这一减熵诉求在学理上承袭了跨越半个世纪的学术努力。",
+          "kind": null,
+          "start": 5056,
+          "end": 5081
+        },
+        {
+          "value": "引入Troncale关于“关联命题”与解析合成的系统论思想",
+          "quote": "Troncale(1978)在一般系统论框架下主张通过“关联命题”实现概念间的解析合成[5],",
+          "kind": null,
+          "start": 5156,
+          "end": 5203
+        },
+        {
+          "value": "借鉴遗传算法的“变异—交叉—选择”逻辑构建三大互动算子",
+          "quote": "参照遗传算法的“变异—交叉—选择”逻辑[15],本文提出由“辩证”“交\n叉”“筛选”三大互动算子组成",
+          "kind": null,
+          "start": 10081,
+          "end": 10131
+        }
+      ]
+    },
+    "04": {
+      "point": "04",
+      "label": "研究范式",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "作者明确将本研究定位为设计科学（Design Science）论文",
+          "quote": "本研究为设计科学",
+          "kind": null,
+          "start": 15396,
+          "end": 15404
+        }
+      ]
+    },
+    "05": {
+      "point": "05",
+      "label": "子领域",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "子领域涉及智慧图书馆、知识管理与未来图书馆",
+          "quote": "关键词　智慧图书馆　知识管理　未来图书馆　Lib3 范式　知识熵减　知识原子化　语义关联映射",
+          "kind": null,
+          "start": 558,
+          "end": 604
+        }
+      ]
+    },
+    "06": {
+      "point": "06",
+      "label": "研究情境",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "研究置于2020年代中期算法成为社会现实基础设施的语境",
+          "quote": "在2020 年代中期,算法已成为编织社会现实的基础设施",
+          "kind": null,
+          "start": 4001,
+          "end": 4028
+        },
+        {
+          "value": "核心情境是信息爆炸与认知稀缺并存的矛盾",
+          "quote": "一个根本性的矛盾日益凸显:我们生活在信息爆炸而认知稀缺的",
+          "kind": null,
+          "start": 4344,
+          "end": 4372
+        }
+      ]
+    },
+    "07": {
+      "point": "07",
+      "label": "研究目标",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "构建基于波普尔世界3理论的自我更新操作系统",
+          "quote": "该范式基于波普尔世界3 理论,试图构建一套具备自我更新能力\n的",
+          "kind": null,
+          "start": 5358,
+          "end": 5389
+        },
+        {
+          "value": "通过知识原子化与自演化算子驱动知识体系自主更新与减熵",
+          "quote": "通过知识原子化技术解构文献束缚,利用自演化算子驱动知识体系的自\n主更新与减熵",
+          "kind": null,
+          "start": 5394,
+          "end": 5432
+        },
+        {
+          "value": "构建W123-CVP闭环校验协议作为核心治理准则",
+          "quote": "本范式构建了世界1—2—3 闭环校验协议(W123-CVP)",
+          "kind": null,
+          "start": 16164,
+          "end": 16194
+        },
+        {
+          "value": "旨在构建高效智能的公共语义层",
+          "quote": "Lib3 旨在构建一个高效智能的公共语义层",
+          "kind": null,
+          "start": 5433,
+          "end": 5454
+        }
+      ]
+    },
+    "08": {
+      "point": "08",
+      "label": "创新点",
+      "agent": "Router",
+      "status": "reported",
+      "items": [
+        {
+          "value": "提出辩证、交叉、筛选三大互动算子作为Lib3内核",
+          "quote": "本文提出由“辩证”“交\n叉”“筛选”三大互动算子组成",
+          "kind": null,
+          "start": 10105,
+          "end": 10131
+        },
+        {
+          "value": "构建世界1—2—3闭环校验协议W123-CVP",
+          "quote": "本范式构建了世界1—2—3 闭环校验协议(W123-CVP)",
+          "kind": null,
+          "start": 16164,
+          "end": 16194
+        },
+        {
+          "value": "ICSP协议将知识产权细化至原子级",
+          "quote": "协议将知识产权细化至原子级",
+          "kind": null,
+          "start": 18415,
+          "end": 18428
+        },
+        {
+          "value": "设置防僵化机制与争议知识分区以应对算法同质化风险",
+          "quote": "Lib3\n \n还需要设置“防僵化\n机制”和“争议知识分区”来应对这一风险",
+          "kind": null,
+          "start": 19658,
+          "end": 19694
+        }
+      ]
+    },
+    "09": {
+      "point": "09",
+      "label": "数据来源",
+      "agent": "Worker_A",
+      "status": "not_applicable",
+      "items": []
+    }
+  },
+  "overview": {
+    "research_questions": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "传统“资源容器”型图书馆以存储与检索效率为核心，但面对客观知识指数增长已力不从心",
+          "quote": "传统图书馆作为“资源容器” 的管理模式,核心目标是优化信息的存储与检索",
+          "kind": null,
+          "start": 4376,
+          "end": 4411
+        },
+        {
+          "value": "传统模式不能有效缓解有限认知带宽与无限信息供给之间的冲突",
+          "quote": "有效缓解人类有限认知带宽与无限信息供给之间的冲突",
+          "kind": null,
+          "start": 4450,
+          "end": 4474
+        },
+        {
+          "value": "信息冗余本身成为新的熵增负担，加剧系统混乱与认知过载",
+          "quote": "成为一种新的熵增负担①,加剧系统的混乱与认知过载。",
+          "kind": null,
+          "start": 4489,
+          "end": 4514
+        },
+        {
+          "value": "既有智慧图书馆探索多聚焦技术增强的服务优化，尚未触及知识组织的第一性原理重构",
+          "quote": "尚未触及知识组织的第一性原理重构。",
+          "kind": null,
+          "start": 4829,
+          "end": 4846
+        },
+        {
+          "value": "破解认知带宽与信息供给冲突，需要从物理资源管控转向逻辑知识管理",
+          "quote": "从物理层面的资源管控向逻辑层面的知识管理的深度转向。",
+          "kind": null,
+          "start": 4885,
+          "end": 4911
+        }
+      ]
+    },
+    "hypotheses": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "图书馆的本体论应建立在知识管理之上",
+          "quote": "图书馆的本体论应架构于知识管理之上",
+          "kind": "qualitative_proposition",
+          "start": 4980,
+          "end": 4997
+        },
+        {
+          "value": "Lib3被界定为客观知识世界的自迭代操作系统",
+          "quote": "Lib3 的本质,是为客观知识世界安装一套自迭代操作系统",
+          "kind": "qualitative_proposition",
+          "start": 8817,
+          "end": 8845
+        }
+      ]
+    },
+    "theoretical_framework": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "Lib3范式以波普尔世界3理论为基础，试图构建具备自我更新能力的操作系统",
+          "quote": "该范式基于波普尔世界3 理论,试图构建一套具备自我更新能力\n的",
+          "kind": null,
+          "start": 5358,
+          "end": 5389
+        },
+        {
+          "value": "知识熵减诉求被置于跨越半个世纪的学术脉络中",
+          "quote": "这一减熵诉求在学理上承袭了跨越半个世纪的学术努力。",
+          "kind": null,
+          "start": 5056,
+          "end": 5081
+        },
+        {
+          "value": "引入Troncale关于“关联命题”与解析合成的系统论思想",
+          "quote": "Troncale(1978)在一般系统论框架下主张通过“关联命题”实现概念间的解析合成[5],",
+          "kind": null,
+          "start": 5156,
+          "end": 5203
+        },
+        {
+          "value": "借鉴遗传算法的“变异—交叉—选择”逻辑构建三大互动算子",
+          "quote": "参照遗传算法的“变异—交叉—选择”逻辑[15],本文提出由“辩证”“交\n叉”“筛选”三大互动算子组成",
+          "kind": null,
+          "start": 10081,
+          "end": 10131
+        }
+      ]
+    },
+    "research_paradigm": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "作者明确将本研究定位为设计科学（Design Science）论文",
+          "quote": "本研究为设计科学",
+          "kind": null,
+          "start": 15396,
+          "end": 15404
+        }
+      ]
+    },
+    "sub_discipline": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "子领域涉及智慧图书馆、知识管理与未来图书馆",
+          "quote": "关键词　智慧图书馆　知识管理　未来图书馆　Lib3 范式　知识熵减　知识原子化　语义关联映射",
+          "kind": null,
+          "start": 558,
+          "end": 604
+        }
+      ]
+    },
+    "application_context": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "研究置于2020年代中期算法成为社会现实基础设施的语境",
+          "quote": "在2020 年代中期,算法已成为编织社会现实的基础设施",
+          "kind": null,
+          "start": 4001,
+          "end": 4028
+        },
+        {
+          "value": "核心情境是信息爆炸与认知稀缺并存的矛盾",
+          "quote": "一个根本性的矛盾日益凸显:我们生活在信息爆炸而认知稀缺的",
+          "kind": null,
+          "start": 4344,
+          "end": 4372
+        }
+      ]
+    },
+    "study_objectives": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "构建基于波普尔世界3理论的自我更新操作系统",
+          "quote": "该范式基于波普尔世界3 理论,试图构建一套具备自我更新能力\n的",
+          "kind": null,
+          "start": 5358,
+          "end": 5389
+        },
+        {
+          "value": "通过知识原子化与自演化算子驱动知识体系自主更新与减熵",
+          "quote": "通过知识原子化技术解构文献束缚,利用自演化算子驱动知识体系的自\n主更新与减熵",
+          "kind": null,
+          "start": 5394,
+          "end": 5432
+        },
+        {
+          "value": "构建W123-CVP闭环校验协议作为核心治理准则",
+          "quote": "本范式构建了世界1—2—3 闭环校验协议(W123-CVP)",
+          "kind": null,
+          "start": 16164,
+          "end": 16194
+        },
+        {
+          "value": "旨在构建高效智能的公共语义层",
+          "quote": "Lib3 旨在构建一个高效智能的公共语义层",
+          "kind": null,
+          "start": 5433,
+          "end": 5454
+        }
+      ]
+    },
+    "novelty_claims": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "提出辩证、交叉、筛选三大互动算子作为Lib3内核",
+          "quote": "本文提出由“辩证”“交\n叉”“筛选”三大互动算子组成",
+          "kind": null,
+          "start": 10105,
+          "end": 10131
+        },
+        {
+          "value": "构建世界1—2—3闭环校验协议W123-CVP",
+          "quote": "本范式构建了世界1—2—3 闭环校验协议(W123-CVP)",
+          "kind": null,
+          "start": 16164,
+          "end": 16194
+        },
+        {
+          "value": "ICSP协议将知识产权细化至原子级",
+          "quote": "协议将知识产权细化至原子级",
+          "kind": null,
+          "start": 18415,
+          "end": 18428
+        },
+        {
+          "value": "设置防僵化机制与争议知识分区以应对算法同质化风险",
+          "quote": "Lib3\n \n还需要设置“防僵化\n机制”和“争议知识分区”来应对这一风险",
+          "kind": null,
+          "start": 19658,
+          "end": 19694
+        }
+      ]
+    },
+    "hypothesis_outcomes": {
+      "status": "not_applicable",
+      "items": []
+    },
+    "key_findings": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "作者论证系统瓶颈从信息不足转向有序性不足",
+          "quote": "系统瓶颈从“信息不足”彻底转向\n“有序性不足”———人类无法从噪声洪流中快速提取可行动的知识。",
+          "kind": null,
+          "start": 6543,
+          "end": 6590
+        },
+        {
+          "value": "三大算子构成Lib3的知识有序化引擎",
+          "quote": "三大算子构成了Lib3 的“知识有序化引擎”",
+          "kind": null,
+          "start": 11138,
+          "end": 11160
+        },
+        {
+          "value": "W123-CVP在三算子中设置分层审计机制",
+          "quote": "W123-CVP 协议在三算子中设置分层审计机制",
+          "kind": null,
+          "start": 16548,
+          "end": 16572
+        },
+        {
+          "value": "ICSP通过逻辑指纹自动溯源并结算原始贡献者信用点",
+          "quote": "系统通过逻辑指纹自动\n溯源并结算其原始贡献者的信用点",
+          "kind": null,
+          "start": 18458,
+          "end": 18484
+        },
+        {
+          "value": "图书馆被设想为摆脱物理或虚拟目的地身份限制的形态",
+          "quote": "图书馆摆脱了物理或虚拟“目的地” 的身份限制",
+          "kind": null,
+          "start": 20710,
+          "end": 20732
+        }
+      ]
+    },
+    "relationship_directions": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "认知成本的急剧增长会使有效通量F衰减",
+          "quote": "与认知成本的急剧增长使有效通量(F)实际衰减",
+          "kind": null,
+          "start": 6520,
+          "end": 6542
+        },
+        {
+          "value": "AI算子强度在公式中作为增益变量",
+          "quote": "它不仅是公式中的一个增益变量",
+          "kind": null,
+          "start": 18109,
+          "end": 18123
+        },
+        {
+          "value": "管理行为只有在净负熵为正时才具备负熵意义上的合法性",
+          "quote": "只有当净负熵为正时",
+          "kind": null,
+          "start": 7641,
+          "end": 7650
+        }
+      ]
+    },
+    "literature_comparisons": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "作者将知识原子化与既有“知识元”概念及“细粒度知识抽取”方法并置",
+          "quote": "“知识元”概念[16]、余丽等发展的“细粒度知识抽取”方法[17]",
+          "kind": null,
+          "start": 12376,
+          "end": 12409
+        },
+        {
+          "value": "作者指出现有知识元/细粒度抽取方案存在三重局限",
+          "quote": "然而,这些方案存在三重局限",
+          "kind": null,
+          "start": 12427,
+          "end": 12440
+        },
+        {
+          "value": "作者用表2比较传统图书馆、数字图书馆与Lib3/知识管理逻辑驱动的智慧图书馆三级演化",
+          "quote": "表2　图书馆形态的三级演化",
+          "kind": null,
+          "start": 17424,
+          "end": 17437
+        }
+      ]
+    },
+    "theoretical_implications": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "理论主张图书馆本体论应架构于知识管理之上",
+          "quote": "图书馆的本体论应架构于知识管理之上",
+          "kind": null,
+          "start": 4980,
+          "end": 4997
+        },
+        {
+          "value": "Lib3被理论化为客观知识世界的自迭代操作系统",
+          "quote": "Lib3 的本质,是为客观知识世界安装一套自迭代操作系统",
+          "kind": null,
+          "start": 8817,
+          "end": 8845
+        },
+        {
+          "value": "图书馆被设想为叠加在现实世界之上的泛在语义层",
+          "quote": "一个叠加在现实世界之上的、无处不在的“泛在语义层”",
+          "kind": null,
+          "start": 20739,
+          "end": 20764
+        }
+      ]
+    },
+    "practical_implications": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "实践上要求图书馆从管理文献转向管理原子化知识",
+          "quote": "图书馆必须实现从“管理文献” 到“管理原子化知识” 的飞跃。",
+          "kind": null,
+          "start": 8733,
+          "end": 8763
+        },
+        {
+          "value": "ICSP提出三阶段实施路径，初期由学术图书馆联盟制定自愿性语义注入标准",
+          "quote": "ICSP 可分三阶段实施:初期可以由学术图书馆联盟制定自愿性语义注入标准",
+          "kind": null,
+          "start": 18706,
+          "end": 18742
+        },
+        {
+          "value": "提出应设计包容性认知界面",
+          "quote": "Lib3\n \n还应设计“包容性认知界面”",
+          "kind": null,
+          "start": 20223,
+          "end": 20243
+        },
+        {
+          "value": "防僵化机制的随机扰动比例与争议分区激活阈值被列为可配置参数",
+          "quote": "防僵化机制的随机扰动比例、争议分区的激活阈值",
+          "kind": null,
+          "start": 20080,
+          "end": 20102
+        }
+      ]
+    },
+    "limitations_and_future_work": {
+      "status": "reported",
+      "items": [
+        {
+          "value": "默会知识、具身认知的适用性需另文探讨",
+          "quote": "对默会知识、具\n身认知的适用性需另文探讨",
+          "kind": null,
+          "start": 21182,
+          "end": 21202
+        },
+        {
+          "value": "工程规模验证需评估算力瓶颈与响应延迟的权衡",
+          "quote": "以评估算力瓶颈与响应延迟的权衡",
+          "kind": null,
+          "start": 21284,
+          "end": 21299
+        },
+        {
+          "value": "ICSP三阶段实施路径需通过案例研究",
+          "quote": "三阶段实施路径(共同体—市场—政策) 需通过案例研究",
+          "kind": null,
+          "start": 21318,
+          "end": 21344
+        },
+        {
+          "value": "具体参数优化需后续工程化研究",
+          "quote": "具体参数优化需后续工程化研究。",
+          "kind": null,
+          "start": 15425,
+          "end": 15440
+        },
+        {
+          "value": "SAM结构未考虑算力瓶颈",
+          "quote": "由于此结构并未考虑算力瓶颈",
+          "kind": null,
+          "start": 15905,
+          "end": 15918
+        }
+      ]
+    }
+  },
+  "v2": {
+    "schema_version": "lis-mas-v0.1-projection",
+    "activities": [
+      {
+        "activity_id": "Worker_C",
+        "module": "Worker_C",
+        "label": "知识组织与定性",
+        "status": "active",
+        "reason": "1 条可定位引文",
+        "evidence_ids": [
+          "ev-47"
+        ]
+      },
+      {
+        "activity_id": "Worker_D_formulas",
+        "module": "Worker_D_formulas",
+        "label": "公式溯源",
+        "status": "active",
+        "reason": "39 条可定位引文",
+        "evidence_ids": [
+          "ev-48",
+          "ev-49",
+          "ev-50",
+          "ev-51",
+          "ev-52",
+          "ev-53",
+          "ev-54",
+          "ev-55",
+          "ev-56",
+          "ev-57",
+          "ev-58",
+          "ev-59",
+          "ev-60",
+          "ev-61",
+          "ev-62",
+          "ev-63",
+          "ev-64",
+          "ev-65",
+          "ev-66",
+          "ev-67",
+          "ev-68",
+          "ev-69",
+          "ev-70",
+          "ev-71",
+          "ev-72",
+          "ev-73",
+          "ev-74",
+          "ev-75",
+          "ev-76",
+          "ev-77",
+          "ev-78",
+          "ev-79",
+          "ev-80",
+          "ev-81",
+          "ev-82",
+          "ev-83",
+          "ev-84",
+          "ev-85",
+          "ev-86"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "fact_id": "fact-1",
+        "activity_id": "Worker_C",
+        "field": "32",
+        "legacy_point": "32",
+        "value": "提出语义特征向量(Lsig)作为知识原子的核心命题逻辑表示",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-47"
+        ]
+      },
+      {
+        "fact_id": "fact-2",
+        "activity_id": "Worker_D_formulas",
+        "field": "61",
+        "legacy_point": "61",
+        "value": "公式(1)为有效通量函数",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-48"
+        ]
+      },
+      {
+        "fact_id": "fact-3",
+        "activity_id": "Worker_D_formulas",
+        "field": "61",
+        "legacy_point": "61",
+        "value": "公式(2)为净负熵贡献率(ΔN)的算法化度量",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-49"
+        ]
+      },
+      {
+        "fact_id": "fact-4",
+        "activity_id": "Worker_D_formulas",
+        "field": "61",
+        "legacy_point": "61",
+        "value": "公式(3)定义SAM三元组",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-50"
+        ]
+      },
+      {
+        "fact_id": "fact-5",
+        "activity_id": "Worker_D_formulas",
+        "field": "61",
+        "legacy_point": "61",
+        "value": "公式(4)为ψAI驱动的负熵功",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-51"
+        ]
+      },
+      {
+        "fact_id": "fact-6",
+        "activity_id": "Worker_D_formulas",
+        "field": "62",
+        "legacy_point": "62",
+        "value": "公式(1)表达式：F = Φ / [E × (Cacquisition+Ccognition)]",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-52"
+        ]
+      },
+      {
+        "fact_id": "fact-7",
+        "activity_id": "Worker_D_formulas",
+        "field": "62",
+        "legacy_point": "62",
+        "value": "公式(2)表达式：ΔN = ΔF / Emanagement = (Fafter-Fbefore) / Emanagement",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-53"
+        ]
+      },
+      {
+        "fact_id": "fact-8",
+        "activity_id": "Worker_D_formulas",
+        "field": "62",
+        "legacy_point": "62",
+        "value": "公式(3)表达式：A = (Lsig,Pcontext,θ)",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-54"
+        ]
+      },
+      {
+        "fact_id": "fact-9",
+        "activity_id": "Worker_D_formulas",
+        "field": "62",
+        "legacy_point": "62",
+        "value": "公式(4)表达式：Flib3 = (Φ×ψAI) / [E × (Cacquisition+Ccognition)]",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-55"
+        ]
+      },
+      {
+        "fact_id": "fact-10",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "Φ为信息通量，指单位时间内流经系统的有效信息量",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-56"
+        ]
+      },
+      {
+        "fact_id": "fact-11",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "E为熵/噪声，指系统中无关、冗余或错误信息的总量",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-57"
+        ]
+      },
+      {
+        "fact_id": "fact-12",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "Cacquisition为获取成本，Ccognition为认知成本，分别对应资源获取成本与逻辑验证的认知成本",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-58"
+        ]
+      },
+      {
+        "fact_id": "fact-13",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "ΔF表示有效通量增益",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-59"
+        ]
+      },
+      {
+        "fact_id": "fact-14",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "公式(2)分母变量为Emanagement",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-60"
+        ]
+      },
+      {
+        "fact_id": "fact-15",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "正文将系统复杂度熵增拼作Emanagment",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-61"
+        ]
+      },
+      {
+        "fact_id": "fact-16",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "公式(2)中ΔF由Fafter-Fbefore构成",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-62"
+        ]
+      },
+      {
+        "fact_id": "fact-17",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "Lsig为语义特征向量",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-63"
+        ]
+      },
+      {
+        "fact_id": "fact-18",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "Pcontext为多维语境指针",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-64"
+        ]
+      },
+      {
+        "fact_id": "fact-19",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "θ为多维可信度权重",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-65"
+        ]
+      },
+      {
+        "fact_id": "fact-20",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "ψAI代表AI算子做功强度，即知识净增量",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-66"
+        ]
+      },
+      {
+        "fact_id": "fact-21",
+        "activity_id": "Worker_D_formulas",
+        "field": "63",
+        "legacy_point": "63",
+        "value": "公式(4)输入变量包括Flib3、Φ、ψAI、E、Cacquisition、Ccognition",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-67"
+        ]
+      },
+      {
+        "fact_id": "fact-22",
+        "activity_id": "Worker_D_formulas",
+        "field": "65",
+        "legacy_point": "65",
+        "value": "θ为多维可信度权重，记录逻辑指纹",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-68"
+        ]
+      },
+      {
+        "fact_id": "fact-23",
+        "activity_id": "Worker_D_formulas",
+        "field": "65",
+        "legacy_point": "65",
+        "value": "θ包括来源权威度、实证数据锚点及W123-CVP循环中的校验历史",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-69"
+        ]
+      },
+      {
+        "fact_id": "fact-24",
+        "activity_id": "Worker_D_formulas",
+        "field": "65",
+        "legacy_point": "65",
+        "value": "筛选算子以证据强度、引用频率和逻辑一致性为权重依据",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-70"
+        ]
+      },
+      {
+        "fact_id": "fact-25",
+        "activity_id": "Worker_D_formulas",
+        "field": "65",
+        "legacy_point": "65",
+        "value": "逼真度算法综合可证伪潜力、批判强度、解释广度进行动态评估",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-71"
+        ]
+      },
+      {
+        "fact_id": "fact-26",
+        "activity_id": "Worker_D_formulas",
+        "field": "65",
+        "legacy_point": "65",
+        "value": "辩证算子以对冲强度>θ1判定高强度互斥",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-72"
+        ]
+      },
+      {
+        "fact_id": "fact-27",
+        "activity_id": "Worker_D_formulas",
+        "field": "65",
+        "legacy_point": "65",
+        "value": "筛选算子以评分>预设阈值θ2进行判定",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-73"
+        ]
+      },
+      {
+        "fact_id": "fact-28",
+        "activity_id": "Worker_D_formulas",
+        "field": "65",
+        "legacy_point": "65",
+        "value": "ψAI是公式(4)中的增益变量",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-74"
+        ]
+      },
+      {
+        "fact_id": "fact-29",
+        "activity_id": "Worker_D_formulas",
+        "field": "65",
+        "legacy_point": "65",
+        "value": "具体参数优化需后续工程化研究，未给出可复算的具体权重数值",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-75"
+        ]
+      },
+      {
+        "fact_id": "fact-30",
+        "activity_id": "Worker_D_formulas",
+        "field": "66",
+        "legacy_point": "66",
+        "value": "辩证算子自动识别并标记知识原子之间的逻辑冲突与矛盾",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-76"
+        ]
+      },
+      {
+        "fact_id": "fact-31",
+        "activity_id": "Worker_D_formulas",
+        "field": "66",
+        "legacy_point": "66",
+        "value": "交叉算子跨越学科边界，将不同领域原理创造性结合",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-77"
+        ]
+      },
+      {
+        "fact_id": "fact-32",
+        "activity_id": "Worker_D_formulas",
+        "field": "66",
+        "legacy_point": "66",
+        "value": "筛选算子基于证据强度、引用频率和逻辑一致性运作",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-78"
+        ]
+      },
+      {
+        "fact_id": "fact-33",
+        "activity_id": "Worker_D_formulas",
+        "field": "66",
+        "legacy_point": "66",
+        "value": "ψAI代表AI算子的做功强度",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-79"
+        ]
+      },
+      {
+        "fact_id": "fact-34",
+        "activity_id": "Worker_D_formulas",
+        "field": "66",
+        "legacy_point": "66",
+        "value": "公式(2)使用Fafter-Fbefore的差值以及ΔF/Emanagement的除法",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-80"
+        ]
+      },
+      {
+        "fact_id": "fact-35",
+        "activity_id": "Worker_D_formulas",
+        "field": "66",
+        "legacy_point": "66",
+        "value": "公式(4)在分子中引入ψAI乘子",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-81"
+        ]
+      },
+      {
+        "fact_id": "fact-36",
+        "activity_id": "Worker_D_formulas",
+        "field": "68",
+        "legacy_point": "68",
+        "value": "公式(1)输出F为有效通量",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-82"
+        ]
+      },
+      {
+        "fact_id": "fact-37",
+        "activity_id": "Worker_D_formulas",
+        "field": "68",
+        "legacy_point": "68",
+        "value": "公式(2)输出ΔN，用作知识管理干预效能的算法化度量",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-83"
+        ]
+      },
+      {
+        "fact_id": "fact-38",
+        "activity_id": "Worker_D_formulas",
+        "field": "68",
+        "legacy_point": "68",
+        "value": "公式(3)输出A，即SAM三元组",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-84"
+        ]
+      },
+      {
+        "fact_id": "fact-39",
+        "activity_id": "Worker_D_formulas",
+        "field": "68",
+        "legacy_point": "68",
+        "value": "公式(4)输出Flib3",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-85"
+        ]
+      },
+      {
+        "fact_id": "fact-40",
+        "activity_id": "Worker_D_formulas",
+        "field": "68",
+        "legacy_point": "68",
+        "value": "作者声称只有当净负熵为正时，管理行为才具备负熵意义上的合法性",
+        "unit": null,
+        "analysis_unit": null,
+        "approx": false,
+        "evidence_ids": [
+          "ev-86"
+        ]
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "ev-1",
+        "quote": "传统图书馆作为“资源容器” 的管理模式,核心目标是优化信息的存储与检索",
+        "start": 4376,
+        "end": 4411,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-2",
+        "quote": "有效缓解人类有限认知带宽与无限信息供给之间的冲突",
+        "start": 4450,
+        "end": 4474,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-3",
+        "quote": "成为一种新的熵增负担①,加剧系统的混乱与认知过载。",
+        "start": 4489,
+        "end": 4514,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-4",
+        "quote": "尚未触及知识组织的第一性原理重构。",
+        "start": 4829,
+        "end": 4846,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-5",
+        "quote": "从物理层面的资源管控向逻辑层面的知识管理的深度转向。",
+        "start": 4885,
+        "end": 4911,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-6",
+        "quote": "图书馆的本体论应架构于知识管理之上",
+        "start": 4980,
+        "end": 4997,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-7",
+        "quote": "Lib3 的本质,是为客观知识世界安装一套自迭代操作系统",
+        "start": 8817,
+        "end": 8845,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-8",
+        "quote": "该范式基于波普尔世界3 理论,试图构建一套具备自我更新能力\n的",
+        "start": 5358,
+        "end": 5389,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-9",
+        "quote": "这一减熵诉求在学理上承袭了跨越半个世纪的学术努力。",
+        "start": 5056,
+        "end": 5081,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-10",
+        "quote": "Troncale(1978)在一般系统论框架下主张通过“关联命题”实现概念间的解析合成[5],",
+        "start": 5156,
+        "end": 5203,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-11",
+        "quote": "参照遗传算法的“变异—交叉—选择”逻辑[15],本文提出由“辩证”“交\n叉”“筛选”三大互动算子组成",
+        "start": 10081,
+        "end": 10131,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-12",
+        "quote": "本研究为设计科学",
+        "start": 15396,
+        "end": 15404,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-13",
+        "quote": "关键词　智慧图书馆　知识管理　未来图书馆　Lib3 范式　知识熵减　知识原子化　语义关联映射",
+        "start": 558,
+        "end": 604,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-14",
+        "quote": "在2020 年代中期,算法已成为编织社会现实的基础设施",
+        "start": 4001,
+        "end": 4028,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-15",
+        "quote": "一个根本性的矛盾日益凸显:我们生活在信息爆炸而认知稀缺的",
+        "start": 4344,
+        "end": 4372,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-16",
+        "quote": "该范式基于波普尔世界3 理论,试图构建一套具备自我更新能力\n的",
+        "start": 5358,
+        "end": 5389,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-17",
+        "quote": "通过知识原子化技术解构文献束缚,利用自演化算子驱动知识体系的自\n主更新与减熵",
+        "start": 5394,
+        "end": 5432,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-18",
+        "quote": "本范式构建了世界1—2—3 闭环校验协议(W123-CVP)",
+        "start": 16164,
+        "end": 16194,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-19",
+        "quote": "Lib3 旨在构建一个高效智能的公共语义层",
+        "start": 5433,
+        "end": 5454,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-20",
+        "quote": "本文提出由“辩证”“交\n叉”“筛选”三大互动算子组成",
+        "start": 10105,
+        "end": 10131,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-21",
+        "quote": "本范式构建了世界1—2—3 闭环校验协议(W123-CVP)",
+        "start": 16164,
+        "end": 16194,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-22",
+        "quote": "协议将知识产权细化至原子级",
+        "start": 18415,
+        "end": 18428,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-23",
+        "quote": "Lib3\n \n还需要设置“防僵化\n机制”和“争议知识分区”来应对这一风险",
+        "start": 19658,
+        "end": 19694,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-24",
+        "quote": "系统瓶颈从“信息不足”彻底转向\n“有序性不足”———人类无法从噪声洪流中快速提取可行动的知识。",
+        "start": 6543,
+        "end": 6590,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-25",
+        "quote": "三大算子构成了Lib3 的“知识有序化引擎”",
+        "start": 11138,
+        "end": 11160,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-26",
+        "quote": "W123-CVP 协议在三算子中设置分层审计机制",
+        "start": 16548,
+        "end": 16572,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-27",
+        "quote": "系统通过逻辑指纹自动\n溯源并结算其原始贡献者的信用点",
+        "start": 18458,
+        "end": 18484,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-28",
+        "quote": "图书馆摆脱了物理或虚拟“目的地” 的身份限制",
+        "start": 20710,
+        "end": 20732,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-29",
+        "quote": "与认知成本的急剧增长使有效通量(F)实际衰减",
+        "start": 6520,
+        "end": 6542,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-30",
+        "quote": "它不仅是公式中的一个增益变量",
+        "start": 18109,
+        "end": 18123,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-31",
+        "quote": "只有当净负熵为正时",
+        "start": 7641,
+        "end": 7650,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-32",
+        "quote": "“知识元”概念[16]、余丽等发展的“细粒度知识抽取”方法[17]",
+        "start": 12376,
+        "end": 12409,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-33",
+        "quote": "然而,这些方案存在三重局限",
+        "start": 12427,
+        "end": 12440,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-34",
+        "quote": "表2　图书馆形态的三级演化",
+        "start": 17424,
+        "end": 17437,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-35",
+        "quote": "图书馆的本体论应架构于知识管理之上",
+        "start": 4980,
+        "end": 4997,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-36",
+        "quote": "Lib3 的本质,是为客观知识世界安装一套自迭代操作系统",
+        "start": 8817,
+        "end": 8845,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-37",
+        "quote": "一个叠加在现实世界之上的、无处不在的“泛在语义层”",
+        "start": 20739,
+        "end": 20764,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-38",
+        "quote": "图书馆必须实现从“管理文献” 到“管理原子化知识” 的飞跃。",
+        "start": 8733,
+        "end": 8763,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-39",
+        "quote": "ICSP 可分三阶段实施:初期可以由学术图书馆联盟制定自愿性语义注入标准",
+        "start": 18706,
+        "end": 18742,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-40",
+        "quote": "Lib3\n \n还应设计“包容性认知界面”",
+        "start": 20223,
+        "end": 20243,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-41",
+        "quote": "防僵化机制的随机扰动比例、争议分区的激活阈值",
+        "start": 20080,
+        "end": 20102,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-42",
+        "quote": "对默会知识、具\n身认知的适用性需另文探讨",
+        "start": 21182,
+        "end": 21202,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-43",
+        "quote": "以评估算力瓶颈与响应延迟的权衡",
+        "start": 21284,
+        "end": 21299,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-44",
+        "quote": "三阶段实施路径(共同体—市场—政策) 需通过案例研究",
+        "start": 21318,
+        "end": 21344,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-45",
+        "quote": "具体参数优化需后续工程化研究。",
+        "start": 15425,
+        "end": 15440,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-46",
+        "quote": "由于此结构并未考虑算力瓶颈",
+        "start": 15905,
+        "end": 15918,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-47",
+        "quote": "语义特征向量(Lsig)是知识原子的逻辑身份证,代表其核心命题逻辑。",
+        "start": 14264,
+        "end": 14298,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-48",
+        "quote": "如公式(1)所示的有效通量函数:",
+        "start": 6187,
+        "end": 6203,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-49",
+        "quote": "作为对知识管理干预效能的算法化度量(见公式(2)):",
+        "start": 7450,
+        "end": 7476,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-50",
+        "quote": "三元组(见公式(3)):",
+        "start": 14131,
+        "end": 14143,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-51",
+        "quote": "驱动的负熵功(见公式(4)):",
+        "start": 17980,
+        "end": 17995,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-52",
+        "quote": "F =\nΦ\nE× (Cacquisition+Ccognition )\n(1)",
+        "start": 6204,
+        "end": 6243,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-53",
+        "quote": "ΔN=\nΔF\nEmanagement\n=\nFafter-Fbefore\nEmanagement\n(2)",
+        "start": 7477,
+        "end": 7528,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-54",
+        "quote": "A = (Lsig,Pcontext,θ )\n(3)",
+        "start": 14234,
+        "end": 14260,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-55",
+        "quote": "Flib3 =\nΦ×ψAI\nE× (Cacquisition+Ccognition )\n(4)",
+        "start": 17996,
+        "end": 18043,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-56",
+        "quote": "Φ(信息通量,Information\n \nFlux)指单位时间内流经系统的有效信息量",
+        "start": 6301,
+        "end": 6343,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-57",
+        "quote": "E(熵/ 噪声,Entropy / Noise)指系统中无关、冗余或错误信息的总量",
+        "start": 6357,
+        "end": 6398,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-58",
+        "quote": "Cacquisition(获取成本)和Ccognition(认知成本)分别代表资源获取成本与逻辑验证的认\n知成本。",
+        "start": 6425,
+        "end": 6482,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-59",
+        "quote": "有效通量增益(ΔF)",
+        "start": 7600,
+        "end": 7610,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-60",
+        "quote": "ΔN=\nΔF\nEmanagement",
+        "start": 7477,
+        "end": 7495,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-61",
+        "quote": "系统复杂度熵增(Emanagment)之比",
+        "start": 7619,
+        "end": 7640,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-62",
+        "quote": "Fafter-Fbefore",
+        "start": 7498,
+        "end": 7512,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-63",
+        "quote": "语义特征向量(Lsig)是知识原子的逻辑身份证",
+        "start": 14264,
+        "end": 14287,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-64",
+        "quote": "多维语境指针(Pcontext)是实现“解构不失真”的关键。",
+        "start": 14425,
+        "end": 14455,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-65",
+        "quote": "多维可信度权重(θ) 记录该原子的“逻辑指纹”",
+        "start": 14576,
+        "end": 14599,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-66",
+        "quote": "ψAI 代表AI 算子的做功强度",
+        "start": 18053,
+        "end": 18069,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-67",
+        "quote": "Flib3 =\nΦ×ψAI\nE× (Cacquisition+Ccognition )",
+        "start": 17996,
+        "end": 18039,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-68",
+        "quote": "多维可信度权重(θ) 记录该原子的“逻辑指纹”",
+        "start": 14576,
+        "end": 14599,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-69",
+        "quote": "包括来源权威度、实证数据锚\n点以及在W123-CVP 循环中的校验历史。",
+        "start": 14601,
+        "end": 14637,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-70",
+        "quote": "基于证据强度、引用频率和逻辑一致性",
+        "start": 10868,
+        "end": 10885,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-71",
+        "quote": "综合“可证伪\n潜力”“批判强度”“解释广度”进行动态评估",
+        "start": 19393,
+        "end": 19421,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-72",
+        "quote": "对冲强度>θ1",
+        "start": 10446,
+        "end": 10453,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-73",
+        "quote": "评分>预设阈值θ2?",
+        "start": 11571,
+        "end": 11581,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-74",
+        "quote": "它不仅是公式中的一个增益变量",
+        "start": 18109,
+        "end": 18123,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-75",
+        "quote": "具体参数优化需后续工程化研究。",
+        "start": 15425,
+        "end": 15440,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-76",
+        "quote": "辩证算子。自动识别并标记知识原子之间的逻辑冲突与矛盾",
+        "start": 10192,
+        "end": 10218,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-77",
+        "quote": "跨越学科边界,主动尝试将不同领域的原理进行创造性结合。",
+        "start": 10630,
+        "end": 10657,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-78",
+        "quote": "基于证据强度、引用频率和逻辑一致性",
+        "start": 10868,
+        "end": 10885,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-79",
+        "quote": "ψAI 代表AI 算子的做功强度",
+        "start": 18053,
+        "end": 18069,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-80",
+        "quote": "ΔF\nEmanagement\n=\nFafter-Fbefore\nEmanagement",
+        "start": 7481,
+        "end": 7524,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-81",
+        "quote": "Φ×ψAI",
+        "start": 18004,
+        "end": 18009,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-82",
+        "quote": "有效通量(F)",
+        "start": 6261,
+        "end": 6268,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-83",
+        "quote": "(ΔN),作为对知识管理干预效能的算法化度量(见公式(2)):",
+        "start": 7445,
+        "end": 7476,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-84",
+        "quote": "A = (Lsig,Pcontext,θ )",
+        "start": 14234,
+        "end": 14256,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-85",
+        "quote": "Flib3 =\nΦ×ψAI",
+        "start": 17996,
+        "end": 18009,
+        "section": null,
+        "page": null
+      },
+      {
+        "evidence_id": "ev-86",
+        "quote": "只有当净负熵为正时",
+        "start": 7641,
+        "end": 7650,
+        "section": null,
+        "page": null
+      }
+    ],
+    "audit": {
+      "status": "PASSED",
+      "issues": []
+    }
+  },
+  "routing_gates": {
+    "has_bibliometric_or_corpus_data": false,
+    "has_human_subjects_or_survey": false,
+    "has_qualitative_or_kos_coding": true,
+    "has_quantitative_or_algorithm": true,
+    "corpus_gate_reason": "作者未报告实际检索、筛选或统计语料库；本文为概念/设计论文，未进行文献计量或语料分析。",
+    "survey_gate_reason": "未报告招募被试、问卷、访谈或用户调查等实际数据采集。",
+    "kos_gate_reason": "文中实质设计了知识原子、SAM三元组及OWL类/属性等语义关系与本体构件，满足本体/词表/语义关系设计标准；但未报告定性编码过程。",
+    "quant_gate_reason": "文中给出编号公式(1)-(4)（如F、ΔN、SAM三元组、Flib3），故开门；但这些是概念性/启发式公式，未报告统计实验或已运行算法。"
+  },
+  "activated_workers": [
+    "Worker_C",
+    "Worker_D_methods",
+    "Worker_D_results",
+    "Worker_D_formulas"
+  ],
+  "audit_report": {
+    "status": "PASSED",
+    "issues": [],
+    "checked_points": 76,
+    "formula_recomputation": "not_run_without_structured_numeric_bindings",
+    "sandbox_results": []
+  },
+  "semantic_triples": [],
+  "retry_count": 0,
+  "run": {
+    "provider": "online-v0.1",
+    "selected_model": "deepseek-flash"
+  }
+}
