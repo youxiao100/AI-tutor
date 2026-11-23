@@ -11,11 +11,10 @@ import json
 import os
 from pathlib import Path
 from typing import Dict, Any, List, Optional
-from fastapi import FastAPI, HTTPException, UploadFile, File
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
+
+from fastapi import Depends, FastAPI, HTTPException, Request, UploadFile, File
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from pydantic import BaseModel, Field
 
 from backend.models import AdaptedDocument, TrainingBlueprint, StageBlueprint
 from backend.adapter import adapt_lis_mas_json
@@ -25,20 +24,29 @@ from backend.question_builder import (
     regenerate_single_stage_via_deepseek,
     build_question_generator_prompts,
     audit_and_scrub_spoilers,
-    DEFAULT_DEEPSEEK_API_KEY
+)
+from backend.auth import (
+    COOKIE_NAME,
+    MAX_UPLOAD_BYTES,
+    acquire_llm_slot,
+    admin_username,
+    assert_same_origin,
+    client_key,
+    create_session,
+    credentials_match,
+    drop_session,
+    hit_limit,
+    login_configured,
+    release_llm_slot,
+    session_state,
 )
 
 app = FastAPI(
     title="引导式科研思维训练系统 v2.0 - 数据清洗与四步动态出题引擎工作台",
-    version="2.0.0"
-)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    version="2.0.0",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,58 +54,70 @@ REPO_SAMPLE_JSON = BASE_DIR / "data" / "lib3_sample.json"
 FALLBACK_JSON_PATH = Path("/home/antigravity/面向知识熵减的智慧图书馆：Lib3范式研究_黄晨_(1).json")
 DEFAULT_JSON_PATH = REPO_SAMPLE_JSON if REPO_SAMPLE_JSON.exists() else FALLBACK_JSON_PATH
 CACHED_BP_PATH = BASE_DIR / "backend" / "cached_lib3_blueprint.json"
+FRONTEND_DIR = BASE_DIR / "frontend"
 
-# In-memory store for active documents and blueprints
-STORE: Dict[str, Any] = {
-    "documents": {},       # doc_id -> AdaptedDocument
-    "raw_jsons": {},       # doc_id -> raw dict
-    "blueprints": {},      # doc_id -> TrainingBlueprint
-    "active_doc_id": "doc_0001"
+# Read-only seed copied into each login session. Request handlers never mutate it.
+SEED: Dict[str, Any] = {
+    "documents": {},
+    "blueprints": {},
+    "active_doc_id": "doc_0001",
 }
 
 
 def init_default_document():
-    if DEFAULT_JSON_PATH.exists():
-        with open(DEFAULT_JSON_PATH, "r", encoding="utf-8") as f:
-            raw_data = json.load(f)
-        doc = adapt_lis_mas_json(raw_data, doc_id="doc_0001")
-        STORE["documents"]["doc_0001"] = doc
-        STORE["raw_jsons"]["doc_0001"] = raw_data
+    if not DEFAULT_JSON_PATH.exists() or SEED["documents"]:
+        return
+    with open(DEFAULT_JSON_PATH, "r", encoding="utf-8") as f:
+        raw_data = json.load(f)
+    doc = adapt_lis_mas_json(raw_data, doc_id="doc_0001")
+    SEED["documents"]["doc_0001"] = doc
 
-        loaded = False
-        if CACHED_BP_PATH.exists():
-            try:
-                with open(CACHED_BP_PATH, "r", encoding="utf-8") as bf:
-                    bp_data = json.load(bf)
-                STORE["blueprints"]["doc_0001"] = TrainingBlueprint(**bp_data)
-                loaded = True
-            except Exception as e:
-                print("Warning: Could not load cached blueprint:", e)
+    loaded = False
+    if CACHED_BP_PATH.exists():
+        try:
+            with open(CACHED_BP_PATH, "r", encoding="utf-8") as bf:
+                bp_data = json.load(bf)
+            SEED["blueprints"]["doc_0001"] = TrainingBlueprint(**bp_data)
+            loaded = True
+        except Exception as e:
+            print("Warning: Could not load cached blueprint:", e)
 
-        if not loaded:
-            golden_bp = build_golden_lib3_blueprint(doc)
-            STORE["blueprints"]["doc_0001"] = golden_bp
-            with open(CACHED_BP_PATH, "w", encoding="utf-8") as bf:
-                bf.write(golden_bp.model_dump_json(indent=2))
+    if not loaded:
+        SEED["blueprints"]["doc_0001"] = build_golden_lib3_blueprint(doc)
+
+
+def clone_seed() -> Dict[str, Any]:
+    init_default_document()
+    return {
+        "documents": {key: value.model_copy(deep=True) for key, value in SEED["documents"].items()},
+        "blueprints": {key: value.model_copy(deep=True) for key, value in SEED["blueprints"].items()},
+        "active_doc_id": SEED["active_doc_id"],
+        "upload_count": 0,
+    }
 
 
 @app.on_event("startup")
 def on_startup():
     init_default_document()
+    if not login_configured():
+        print("ADMIN_PASSWORD is not set; workshop login is closed.")
+
+
+class LoginRequest(BaseModel):
+    username: str = Field(max_length=64)
+    password: str = Field(max_length=128)
 
 
 class GenerateBlueprintRequest(BaseModel):
     document_id: str = "doc_0001"
     custom_blacklist: Optional[List[str]] = None
-    api_key: Optional[str] = None
 
 
 class RegenerateStageRequest(BaseModel):
     document_id: str = "doc_0001"
-    stage_number: int
-    teacher_instruction: str = ""
-    previous_stage_student_output: str = ""
-    api_key: Optional[str] = None
+    stage_number: int = Field(ge=1, le=8)
+    teacher_instruction: str = Field(default="", max_length=1500)
+    previous_stage_student_output: str = Field(default="", max_length=2000)
 
 
 class UpdateStageRequest(BaseModel):
@@ -107,132 +127,182 @@ class UpdateStageRequest(BaseModel):
 
 class UpdateBlacklistRequest(BaseModel):
     document_id: str = "doc_0001"
-    spoiler_blacklist: List[str]
+    spoiler_blacklist: List[str] = Field(max_length=64)
+
+
+def require_session(request: Request) -> dict:
+    assert_same_origin(request)
+    return session_state(request)
+
+
+def owned_document(store: dict, document_id: str) -> AdaptedDocument:
+    doc = store["documents"].get(document_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail="未找到这篇论文，或它不属于当前登录会话")
+    return doc
+
+
+def server_api_key() -> str:
+    return os.environ.get("DEEPSEEK_API_KEY", "").strip()
+
+
+def cookie_secure(request: Request) -> bool:
+    forwarded = request.headers.get("x-forwarded-proto", "")
+    scheme = forwarded.split(",")[0].strip() if forwarded else request.url.scheme
+    return scheme == "https"
+
+
+def _clean_blacklist(terms: List[str]) -> List[str]:
+    cleaned = []
+    for term in terms:
+        text = str(term).strip()
+        if not text or len(text) > 48:
+            raise HTTPException(status_code=400, detail="剧透词需为 1–48 个字符")
+        if text not in cleaned:
+            cleaned.append(text)
+    return cleaned
+
+
+@app.post("/api/login")
+def api_login(req: LoginRequest, request: Request):
+    assert_same_origin(request)
+    hit_limit(f"login:{client_key(request)}", limit=8, window_seconds=600)
+    if not login_configured():
+        raise HTTPException(status_code=503, detail="登录尚未配置")
+    if not credentials_match(req.username.strip(), req.password):
+        raise HTTPException(status_code=401, detail="用户名或密码不正确")
+    token = create_session(clone_seed())
+    response = JSONResponse({"ok": True, "username": admin_username()})
+    response.set_cookie(
+        COOKIE_NAME,
+        token,
+        httponly=True,
+        samesite="lax",
+        secure=cookie_secure(request),
+        max_age=12 * 60 * 60,
+        path="/",
+    )
+    return response
+
+
+@app.post("/api/logout")
+def api_logout(request: Request):
+    assert_same_origin(request)
+    drop_session(request.cookies.get(COOKIE_NAME))
+    response = JSONResponse({"ok": True})
+    response.delete_cookie(COOKIE_NAME, path="/")
+    return response
 
 
 @app.post("/api/reset-golden-blueprint")
-def api_reset_golden_blueprint(req: GenerateBlueprintRequest):
-    doc: AdaptedDocument = STORE["documents"].get(req.document_id)
-    if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
-    golden_bp = build_golden_lib3_blueprint(doc)
-    STORE["blueprints"][req.document_id] = golden_bp
-    if req.document_id == "doc_0001":
-        with open(CACHED_BP_PATH, "w", encoding="utf-8") as bf:
-            bf.write(golden_bp.model_dump_json(indent=2))
-    return {"blueprint": golden_bp.model_dump()}
+def api_reset_golden_blueprint(req: GenerateBlueprintRequest, store: dict = Depends(require_session)):
+    doc = owned_document(store, req.document_id)
+    store["blueprints"][req.document_id] = build_golden_lib3_blueprint(doc)
+    return {"blueprint": store["blueprints"][req.document_id].model_dump()}
 
 
 @app.get("/api/state")
-def get_current_state(document_id: Optional[str] = None):
-    doc_id = document_id or STORE["active_doc_id"]
-    if doc_id not in STORE["documents"]:
-        init_default_document()
-    doc: AdaptedDocument = STORE["documents"].get(doc_id)
-    if not doc:
-        raise HTTPException(status_code=404, detail="未找到对应的论文 JSON 数据")
-
-    # Reload cached blueprint if it just finished generating in background
-    if doc_id not in STORE["blueprints"] and CACHED_BP_PATH.exists() and doc_id == "doc_0001":
-        try:
-            with open(CACHED_BP_PATH, "r", encoding="utf-8") as bf:
-                bp_data = json.load(bf)
-            STORE["blueprints"]["doc_0001"] = TrainingBlueprint(**bp_data)
-        except Exception:
-            pass
-
-    bp: Optional[TrainingBlueprint] = STORE["blueprints"].get(doc_id)
+def get_current_state(document_id: Optional[str] = None, store: dict = Depends(require_session)):
+    doc_id = document_id or store["active_doc_id"]
+    doc = owned_document(store, doc_id)
+    bp: Optional[TrainingBlueprint] = store["blueprints"].get(doc_id)
     sys_prompt, usr_prompt = build_question_generator_prompts(doc)
-
     return {
         "active_doc_id": doc_id,
         "document": doc.model_dump(),
         "blueprint": bp.model_dump() if bp else None,
         "prompts_preview": {
             "system_prompt": sys_prompt,
-            "user_prompt": usr_prompt
+            "user_prompt": usr_prompt,
         },
         "available_documents": [
-            {"document_id": k, "paper_id": v.paper_id, "paradigm_display": v.paradigm_display}
-            for k, v in STORE["documents"].items()
-        ]
+            {"document_id": key, "paper_id": value.paper_id, "paradigm_display": value.paradigm_display}
+            for key, value in store["documents"].items()
+        ],
     }
 
 
 @app.post("/api/upload-json")
-async def upload_paper_json(file: UploadFile = File(...)):
+async def upload_paper_json(file: UploadFile = File(...), store: dict = Depends(require_session)):
+    hit_limit(f"upload:{id(store)}", limit=10, window_seconds=600)
+    content = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="JSON 文件不能超过 1.5 MB")
     try:
-        content = await file.read()
         raw_data = json.loads(content.decode("utf-8"))
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"JSON 解析失败: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=400, detail="JSON 解析失败")
 
-    if "point_annotations" not in raw_data and "v2" not in raw_data:
+    if not isinstance(raw_data, dict) or ("point_annotations" not in raw_data and "v2" not in raw_data):
         raise HTTPException(status_code=400, detail="上传的 JSON 不符合 lis-mas 标注格式（缺少 point_annotations 或 v2 字段）")
 
-    doc_id = f"doc_{len(STORE['documents']) + 1:04d}"
+    store["upload_count"] = int(store.get("upload_count", 0)) + 1
+    doc_id = f"doc_u{store['upload_count']:04d}"
     doc = adapt_lis_mas_json(raw_data, doc_id=doc_id)
-    STORE["documents"][doc_id] = doc
-    STORE["raw_jsons"][doc_id] = raw_data
-    STORE["active_doc_id"] = doc_id
-
+    store["documents"][doc_id] = doc
+    store["active_doc_id"] = doc_id
+    store["blueprints"].pop(doc_id, None)
     return {
         "message": f"成功导入并清洗《{doc.paper_id}》",
         "document_id": doc_id,
-        "document": doc.model_dump()
+        "document": doc.model_dump(),
     }
 
 
 @app.post("/api/update-blacklist")
-def update_blacklist(req: UpdateBlacklistRequest):
-    doc: AdaptedDocument = STORE["documents"].get(req.document_id)
-    if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
-
-    doc.spoiler_blacklist = req.spoiler_blacklist
-    bp: Optional[TrainingBlueprint] = STORE["blueprints"].get(req.document_id)
+def update_blacklist(req: UpdateBlacklistRequest, store: dict = Depends(require_session)):
+    doc = owned_document(store, req.document_id)
+    doc.spoiler_blacklist = _clean_blacklist(req.spoiler_blacklist)
+    bp: Optional[TrainingBlueprint] = store["blueprints"].get(req.document_id)
     if bp:
-        bp.spoiler_blacklist = req.spoiler_blacklist
-        violations = audit_and_scrub_spoilers(bp.stages, req.spoiler_blacklist)
+        bp.spoiler_blacklist = list(doc.spoiler_blacklist)
+        violations = audit_and_scrub_spoilers(bp.stages, doc.spoiler_blacklist)
         bp.spoiler_violations = violations
-        bp.spoiler_audit_passed = (len(violations) == 0)
-
+        bp.spoiler_audit_passed = len(violations) == 0
     return {
         "spoiler_blacklist": doc.spoiler_blacklist,
-        "blueprint": bp.model_dump() if bp else None
+        "blueprint": bp.model_dump() if bp else None,
     }
 
 
 @app.post("/api/generate-blueprint")
-def api_generate_blueprint(req: GenerateBlueprintRequest):
-    doc: AdaptedDocument = STORE["documents"].get(req.document_id)
-    if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
-
-    api_key = req.api_key or DEFAULT_DEEPSEEK_API_KEY
+def api_generate_blueprint(req: GenerateBlueprintRequest, store: dict = Depends(require_session)):
+    doc = owned_document(store, req.document_id)
+    api_key = server_api_key()
+    if not api_key:
+        raise HTTPException(status_code=503, detail="DeepSeek 密钥尚未配置，当前仍可使用内置蓝图")
+    hit_limit(f"generate:{id(store)}", limit=3, window_seconds=3600)
+    hit_limit("generate:global", limit=6, window_seconds=3600)
+    blacklist = _clean_blacklist(req.custom_blacklist) if req.custom_blacklist is not None else None
+    acquire_llm_slot()
     try:
         bp = generate_training_blueprint_via_deepseek(
             doc=doc,
             api_key=api_key,
-            custom_blacklist=req.custom_blacklist
+            custom_blacklist=blacklist,
         )
-        STORE["blueprints"][req.document_id] = bp
-        if req.document_id == "doc_0001":
-            with open(CACHED_BP_PATH, "w", encoding="utf-8") as f:
-                f.write(bp.model_dump_json(indent=2))
-        return {"blueprint": bp.model_dump()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"DeepSeek 动态出题生成失败: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=502, detail="DeepSeek 动态出题生成失败")
+    finally:
+        release_llm_slot()
+    store["blueprints"][req.document_id] = bp
+    return {"blueprint": bp.model_dump()}
 
 
 @app.post("/api/regenerate-stage")
-def api_regenerate_stage(req: RegenerateStageRequest):
-    doc: AdaptedDocument = STORE["documents"].get(req.document_id)
-    bp: Optional[TrainingBlueprint] = STORE["blueprints"].get(req.document_id)
-    if not doc or not bp:
+def api_regenerate_stage(req: RegenerateStageRequest, store: dict = Depends(require_session)):
+    doc = owned_document(store, req.document_id)
+    bp: Optional[TrainingBlueprint] = store["blueprints"].get(req.document_id)
+    if not bp:
         raise HTTPException(status_code=404, detail="请先生成或加载 8 关训练蓝图")
-
-    api_key = req.api_key or DEFAULT_DEEPSEEK_API_KEY
+    api_key = server_api_key()
+    if not api_key:
+        raise HTTPException(status_code=503, detail="DeepSeek 密钥尚未配置，当前仍可使用内置蓝图")
+    hit_limit(f"regen:{id(store)}", limit=8, window_seconds=3600)
+    hit_limit("regen:global", limit=20, window_seconds=3600)
+    acquire_llm_slot()
     try:
         new_stage = regenerate_single_stage_via_deepseek(
             doc=doc,
@@ -240,60 +310,51 @@ def api_regenerate_stage(req: RegenerateStageRequest):
             stage_number=req.stage_number,
             teacher_instruction=req.teacher_instruction,
             previous_stage_student_output=req.previous_stage_student_output,
-            api_key=api_key
+            api_key=api_key,
         )
-        # Replace stage in blueprint
-        updated_stages = []
-        for s in bp.stages:
-            if s.stage_number == req.stage_number:
-                updated_stages.append(new_stage)
-            else:
-                updated_stages.append(s)
-        bp.stages = updated_stages
-        violations = audit_and_scrub_spoilers(bp.stages, bp.spoiler_blacklist[:15])
-        bp.spoiler_violations = violations
-        bp.spoiler_audit_passed = (len(violations) == 0)
-
-        if req.document_id == "doc_0001":
-            with open(CACHED_BP_PATH, "w", encoding="utf-8") as f:
-                f.write(bp.model_dump_json(indent=2))
-
-        return {"stage": new_stage.model_dump(), "blueprint": bp.model_dump()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"单关重生成失败: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=502, detail="单关重生成失败")
+    finally:
+        release_llm_slot()
+    bp.stages = [new_stage if stage.stage_number == req.stage_number else stage for stage in bp.stages]
+    violations = audit_and_scrub_spoilers(bp.stages, bp.spoiler_blacklist[:15])
+    bp.spoiler_violations = violations
+    bp.spoiler_audit_passed = len(violations) == 0
+    return {"stage": new_stage.model_dump(), "blueprint": bp.model_dump()}
 
 
 @app.post("/api/save-stage")
-def api_save_stage(req: UpdateStageRequest):
-    bp: Optional[TrainingBlueprint] = STORE["blueprints"].get(req.document_id)
+def api_save_stage(req: UpdateStageRequest, store: dict = Depends(require_session)):
+    owned_document(store, req.document_id)
+    bp: Optional[TrainingBlueprint] = store["blueprints"].get(req.document_id)
     if not bp:
         raise HTTPException(status_code=404, detail="Blueprint not found")
-
-    updated_stages = []
-    for s in bp.stages:
-        if s.stage_number == req.stage.stage_number:
-            updated_stages.append(req.stage)
-        else:
-            updated_stages.append(s)
-    bp.stages = updated_stages
+    if req.stage.stage_number < 1 or req.stage.stage_number > 8:
+        raise HTTPException(status_code=400, detail="关卡编号无效")
+    bp.stages = [req.stage if stage.stage_number == req.stage.stage_number else stage for stage in bp.stages]
     violations = audit_and_scrub_spoilers(bp.stages, bp.spoiler_blacklist[:15])
     bp.spoiler_violations = violations
-    bp.spoiler_audit_passed = (len(violations) == 0)
-
-    if req.document_id == "doc_0001":
-        with open(CACHED_BP_PATH, "w", encoding="utf-8") as f:
-            f.write(bp.model_dump_json(indent=2))
-
+    bp.spoiler_audit_passed = len(violations) == 0
     return {"blueprint": bp.model_dump()}
 
 
-# Serve Frontend
-FRONTEND_DIR = BASE_DIR / "frontend"
-if FRONTEND_DIR.exists():
-    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+@app.get("/login")
+def serve_login():
+    return FileResponse(FRONTEND_DIR / "login.html")
+
 
 @app.get("/")
-def serve_index():
+def serve_index(request: Request):
+    token = request.cookies.get(COOKIE_NAME)
+    try:
+        if token:
+            session_state(request)
+        else:
+            raise HTTPException(status_code=401, detail="请先登录")
+    except HTTPException:
+        return RedirectResponse(url="/login", status_code=303)
     index_file = FRONTEND_DIR / "index.html"
     if index_file.exists():
         return FileResponse(str(index_file))
