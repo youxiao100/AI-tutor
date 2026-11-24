@@ -13,7 +13,7 @@ import urllib.request
 from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional, Tuple
 
-from backend.models import (
+from backend.question_bank.models import (
     AdaptedDocument,
     TrainingBlueprint,
     StageBlueprint,
@@ -25,7 +25,7 @@ from backend.models import (
 def _load_default_api_key() -> str:
     if os.environ.get("DEEPSEEK_API_KEY"):
         return os.environ["DEEPSEEK_API_KEY"]
-    env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+    env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
     if os.path.exists(env_file):
         with open(env_file, "r", encoding="utf-8") as f:
             for line in f:

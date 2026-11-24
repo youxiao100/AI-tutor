@@ -1,58 +1,101 @@
-# 基于学术论文深度标注 JSON 的引导式科研思维训练系统 (v2.0)
+# 引导式科研思维训练系统
 
-本项目实现 **引导式 AI 科研思维导师系统 v2.0**，当前包含：
-1. **真实 `lis-mas-v0.1` JSON 数据清洗与冲突降级适配器** (`backend/adapter.py`)
-2. **程序内置 v2.0 黄金标准 8 关训练蓝图引擎** (`backend/golden_blueprint.py`)
-3. **基于 DeepSeek API 的四步逆向动态出题与单关调优引擎** (`backend/question_builder.py`)
-4. **可视化出题审校与测试工作台** (`frontend/index.html` + `backend/main.py`)
+整个流程分成两块，共用一次登录。题库负责把论文变成可审校的关卡；答题只读取这份题库，不另出一套题。
+
+```text
+论文标注 JSON
+      │
+      ▼
+后端题库   backend/question_bank
+      │     8 关训练蓝图，在 / 审校
+      ▼
+前端答题   frontend/answering
+            /answer 按蓝图作答，确认后的产出进入下一关
+```
+
+| | 后端题库 | 前端答题 |
+|---|---|---|
+| 做什么 | 清洗论文 JSON，生成并审校 8 关蓝图 | 学生按当前蓝图作答 |
+| 代码 | `backend/question_bank/` | `frontend/answering/answer.html`、`backend/answering.py` |
+| 页面 | [http://127.0.0.1:8000](http://127.0.0.1:8000) | [http://127.0.0.1:8000/answer](http://127.0.0.1:8000/answer) |
+| 输入 | `data/lib3_sample.json` 或上传的标注 JSON | 题库里当前这篇论文的蓝图 |
+| 不做什么 | 不保存学生答卷 | 不调用 DeepSeek，不按和论文的相似度打分 |
+
+登录密码只来自环境变量 `WORKSHOP_PASSWORD`，不要写进代码或仓库。
 
 ---
 
-## 本地一键启动方式
+## 本地启动
 
-### 1. 克隆或拉取最新代码
 ```bash
 git clone https://github.com/youxiao100/AI-tutor.git
 cd AI-tutor
-```
-
-### 2. 安装 Python 依赖
-（仅需轻量级 `fastapi`、`uvicorn`、`pydantic`、`python-multipart`）
-```bash
 pip install -r requirements.txt
-```
-
-### 3. 启动本地 Web 服务
-```bash
+export ADMIN_USERNAME=admin
+export WORKSHOP_PASSWORD='你的密码'
 python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-### 4. 在本地浏览器打开
-先设置工作台登录密码（不要写进代码或仓库）：
-
-```bash
-export ADMIN_USERNAME=admin
-export WORKSHOP_PASSWORD='你的密码'
-```
-
-然后访问 [http://127.0.0.1:8000](http://127.0.0.1:8000)，使用该账号登录。DeepSeek 出题另外读取 `DEEPSEEK_API_KEY`；未配置时仍可使用内置 8 关蓝图。
-
-### 5. 学生答题
-
-出题工作台右上角进入「学生答题」，或直接打开 [http://127.0.0.1:8000/answer](http://127.0.0.1:8000/answer)。答题使用当前蓝图：先自由作答，未过逻辑安检就只追问一个缺口；连续两轮笼统表述后给出等权选择题。阶段产出要学生自己确认后才写入研究状态，对照阶段才展示论文锚点。不按和论文的相似度打分，这一步也不调用 DeepSeek。
+DeepSeek 出题另外读取 `DEEPSEEK_API_KEY`。没配置时，题库使用内置 8 关蓝图，答题不受影响。
 
 ---
 
-## 工作台功能说明
+## 1. 后端题库
 
-- **🎯 四步动态出题引擎 & 8 关训练蓝图**：
-  - 默认自动加载《面向知识熵减的智慧图书馆：Lib3范式研究》内置黄金标准 8 关蓝图。
-  - 支持切换 **全流程 (1–8关) / 破题局 (1–2关) / 架构局 (3–5关) / 挑刺局 (6–7关)** 微训练切片。
-  - 支持在 **第 2–7 关** 的「动态衔接插槽模拟器」中输入任意模拟学生产出，实时预览动态题干拼装，或点击 **「⚡ DeepSeek 重写本关」** 测试单关动态协同调优。
-  - 点击右上角 **「DeepSeek API 动态出题测试」** 可测试由 DeepSeek 实时逆向还原全部 8 关蓝图。
-- **🧹 JSON 体检、冲突拦截与引文清洗**：
-  - 展示 76 项标注点位三态统计（`reported` / `not_reported` / `not_applicable`）。
-  - 展示 `GATE_POINT_CONFLICT:point_33` 等路由门控与点位冲突报警及 `v2.facts` 自动回退补齐报告。
-  - 对比展示 22 处含 PDF 异常断行 `\n` 的 `raw_quote` 与清洗后的 `display_quote`。
-- **🛡️ 剧透防火墙 (Spoiler Guard) 与案发现场隔离**：
-  - 左侧展示第 1 关允许使用的「案发现场原料（Point 01 & 06）」，右侧支持实时增删「剧透黑名单」并自动对第 1–7 关执行零剧透审计。
+目录：`backend/question_bank/`
+
+- `adapter.py`：把 `lis-mas-v0.1` 标注 JSON 清洗成统一文档，拦截门控和点位冲突。
+- `golden_blueprint.py`：内置《Lib3 范式研究》8 关黄金蓝图。离线可用。
+- `question_builder.py`：四步逆向出题。配置了 `DEEPSEEK_API_KEY` 时可以重写整套或单关。
+- `models.py`：文档、蓝图、选项和安检门的数据结构。
+- `cached_lib3_blueprint.json`：默认加载的蓝图缓存。
+- 样例输入在 `data/lib3_sample.json`。
+
+审校页面是 `frontend/question_bank/index.html`。右上角可以进入前端答题。
+
+题库接口（都要先登录）：
+
+| 方法 | 路径 | 作用 |
+|---|---|---|
+| GET | `/api/state` | 当前论文和蓝图 |
+| POST | `/api/upload-json` | 上传标注 JSON 并适配 |
+| POST | `/api/generate-blueprint` | 用 DeepSeek 生成 8 关 |
+| POST | `/api/regenerate-stage` | 重写单关 |
+| POST | `/api/save-stage` | 保存审校后的一关 |
+| POST | `/api/update-blacklist` | 修改剧透黑名单并复查 |
+| POST | `/api/reset-golden-blueprint` | 恢复内置黄金蓝图 |
+
+题库页面上可以：
+
+- 切换全流程、破题局（1–2 关）、架构局（3–5 关）、挑刺局（6–7 关）。
+- 在第 2–7 关用模拟学生产出预览动态题干，或重写单关。
+- 查看 76 个点位的三态统计、门控冲突，以及清洗前后的引文。
+- 编辑剧透黑名单，审计第 1–7 关是否泄漏专有名词。
+
+## 2. 前端答题
+
+页面：`frontend/answering/answer.html`  
+会话逻辑：`backend/answering.py`，只消费题库给出的 `TrainingBlueprint`。
+
+作答规则：
+
+- 先自由作答。没过本关逻辑安检时，只追问一个缺口。
+- 连续两轮笼统或重复，才给出蓝图里的等权选项，没有标准答案。
+- 阶段产出要学生自己确认，才写入研究状态，并填进下一关题干。
+- 论文标题和锚点在对照之前不出现。方向与论文不同时，对照论证骨架，不要求改成论文结论。
+- 报告按每关安检过没过给 0–3 的描述，不按相似度打分。
+
+答题接口（都要先登录）：
+
+| 方法 | 路径 | 作用 |
+|---|---|---|
+| GET | `/api/answer` | 当前答题进度；还没开始时返回可选切片 |
+| POST | `/api/answer/start` | 选择全流程或一个微训练切片 |
+| POST | `/api/answer/submit` | 提交自由作答、追问或理由 |
+| POST | `/api/answer/choose` | 选择一个等权方向 |
+| POST | `/api/answer/inspiration` | 第 3、5 关抽取灵感卡片 |
+| POST | `/api/answer/confirm` | 确认本关产出 |
+| POST | `/api/answer/acknowledge` | 看完对照，进入下一关或生成报告 |
+| POST | `/api/answer/reset` | 回到选题 |
+
+设计说明仍在 `docs_v2_0.md`。上面两块是现在仓库里的实现边界。

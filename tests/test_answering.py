@@ -8,7 +8,7 @@ from pathlib import Path
 os.environ.setdefault("ADMIN_USERNAME", "admin")
 os.environ.setdefault("ADMIN_PASSWORD", "answering-test-pass")
 
-from backend.adapter import adapt_lis_mas_json
+from backend.question_bank.adapter import adapt_lis_mas_json
 from backend.answering import (
     acknowledge_compare,
     choose_option,
@@ -23,7 +23,7 @@ from backend.answering import (
     submit_text,
     tutor_contains_praise,
 )
-from backend.golden_blueprint import build_golden_lib3_blueprint
+from backend.question_bank.golden_blueprint import build_golden_lib3_blueprint
 
 ROOT = Path(__file__).resolve().parents[1]
 SPOILERS = ["Lib3", "知识熵减", "W123-CVP", "ICSP", "SAM三元组", "波普尔世界3"]

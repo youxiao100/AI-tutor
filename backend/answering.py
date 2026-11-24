@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from typing import Dict, List, Optional, Tuple
 
-from backend.models import StageBlueprint, TrainingBlueprint
+from backend.question_bank.models import StageBlueprint, TrainingBlueprint
 
 
 MICRO_SESSIONS: Dict[str, Dict[str, object]] = {

@@ -1,10 +1,7 @@
 """
-FastAPI Backend for the Socratic Research Thinking Training System (v2.0).
-Provides endpoints for:
-1. JSON Upload / Adaptation / Sanitization & Gate-Point Conflict Inspection
-2. Four-Step Dynamic Question Builder (Full 8-stage Blueprint & Single-Stage Live Regeneration via DeepSeek API)
-3. Spoiler Blacklist Editing & Live Spoiler Firewall Audit
-4. Interactive Socratic Prompt & Slot Assembly Preview
+One service, two surfaces:
+1. Question bank — paper JSON becomes a reviewable training blueprint.
+2. Answering — the student frontend reads that blueprint and records confirmed output.
 """
 
 import json
@@ -16,10 +13,10 @@ from fastapi import Depends, FastAPI, HTTPException, Request, UploadFile, File
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
-from backend.models import AdaptedDocument, TrainingBlueprint, StageBlueprint
-from backend.adapter import adapt_lis_mas_json
-from backend.golden_blueprint import build_golden_lib3_blueprint
-from backend.question_builder import (
+from backend.question_bank.models import AdaptedDocument, TrainingBlueprint, StageBlueprint
+from backend.question_bank.adapter import adapt_lis_mas_json
+from backend.question_bank.golden_blueprint import build_golden_lib3_blueprint
+from backend.question_bank.question_builder import (
     generate_training_blueprint_via_deepseek,
     regenerate_single_stage_via_deepseek,
     build_question_generator_prompts,
@@ -52,7 +49,7 @@ from backend.auth import (
 )
 
 app = FastAPI(
-    title="引导式科研思维训练系统 v2.0 - 数据清洗与四步动态出题引擎工作台",
+    title="引导式科研思维训练系统 — 后端题库与前端答题",
     version="2.0.0",
     docs_url=None,
     redoc_url=None,
@@ -63,8 +60,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 REPO_SAMPLE_JSON = BASE_DIR / "data" / "lib3_sample.json"
 FALLBACK_JSON_PATH = Path("/home/antigravity/面向知识熵减的智慧图书馆：Lib3范式研究_黄晨_(1).json")
 DEFAULT_JSON_PATH = REPO_SAMPLE_JSON if REPO_SAMPLE_JSON.exists() else FALLBACK_JSON_PATH
-CACHED_BP_PATH = BASE_DIR / "backend" / "cached_lib3_blueprint.json"
-FRONTEND_DIR = BASE_DIR / "frontend"
+CACHED_BP_PATH = BASE_DIR / "backend" / "question_bank" / "cached_lib3_blueprint.json"
+QUESTION_BANK_PAGE = BASE_DIR / "frontend" / "question_bank" / "index.html"
+ANSWERING_PAGE = BASE_DIR / "frontend" / "answering" / "answer.html"
+LOGIN_PAGE = BASE_DIR / "frontend" / "login.html"
 
 # Read-only seed copied into each login session. Request handlers never mutate it.
 SEED: Dict[str, Any] = {
@@ -478,7 +477,7 @@ def api_answer_reset(store: dict = Depends(require_session)):
 
 @app.get("/login")
 def serve_login():
-    return FileResponse(FRONTEND_DIR / "login.html")
+    return FileResponse(LOGIN_PAGE)
 
 
 @app.get("/answer")
@@ -491,9 +490,8 @@ def serve_answer(request: Request):
             raise HTTPException(status_code=401, detail="请先登录")
     except HTTPException:
         return RedirectResponse(url="/login", status_code=303)
-    page = FRONTEND_DIR / "answer.html"
-    if page.exists():
-        return FileResponse(str(page))
+    if ANSWERING_PAGE.exists():
+        return FileResponse(str(ANSWERING_PAGE))
     raise HTTPException(status_code=404, detail="答题页还没有准备好")
 
 
@@ -507,7 +505,6 @@ def serve_index(request: Request):
             raise HTTPException(status_code=401, detail="请先登录")
     except HTTPException:
         return RedirectResponse(url="/login", status_code=303)
-    index_file = FRONTEND_DIR / "index.html"
-    if index_file.exists():
-        return FileResponse(str(index_file))
-    return {"message": "Frontend index.html not found yet."}
+    if QUESTION_BANK_PAGE.exists():
+        return FileResponse(str(QUESTION_BANK_PAGE))
+    return {"message": "Question bank page not found yet."}

@@ -10,7 +10,7 @@ Handles:
 
 import re
 from typing import Dict, Any, List, Tuple, Optional
-from backend.models import AdaptedDocument, Claim, Evidence, QualityFlag
+from backend.question_bank.models import AdaptedDocument, Claim, Evidence, QualityFlag
 
 
 POINT_ROLE_MAP = {
