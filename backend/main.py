@@ -25,6 +25,16 @@ from backend.question_builder import (
     build_question_generator_prompts,
     audit_and_scrub_spoilers,
 )
+from backend.answering import (
+    acknowledge_compare,
+    choose_option,
+    confirm_output,
+    inactive_view,
+    public_view,
+    request_inspiration,
+    start_attempt,
+    submit_text,
+)
 from backend.auth import (
     COOKIE_NAME,
     MAX_UPLOAD_BYTES,
@@ -106,6 +116,24 @@ def on_startup():
 class LoginRequest(BaseModel):
     username: str = Field(max_length=64)
     password: str = Field(max_length=128)
+
+
+class AnswerStartRequest(BaseModel):
+    document_id: str = "doc_0001"
+    micro_session: str = "full_8_stages"
+
+
+class AnswerTextRequest(BaseModel):
+    text: str = Field(default="", max_length=2000)
+
+
+class AnswerChooseRequest(BaseModel):
+    key: str = Field(max_length=4)
+    custom_text: str = Field(default="", max_length=500)
+
+
+class AnswerConfirmRequest(BaseModel):
+    confirmed_output: str = Field(max_length=2000)
 
 
 class GenerateBlueprintRequest(BaseModel):
@@ -340,9 +368,133 @@ def api_save_stage(req: UpdateStageRequest, store: dict = Depends(require_sessio
     return {"blueprint": bp.model_dump()}
 
 
+def _answer_bundle(store: dict, document_id: Optional[str] = None):
+    doc_id = (document_id or store.get("active_doc_id") or "doc_0001").strip()
+    doc = store["documents"].get(doc_id)
+    blueprint = store["blueprints"].get(doc_id)
+    if not doc or not blueprint:
+        raise HTTPException(status_code=404, detail="当前没有可作答的训练蓝图")
+    return doc, blueprint
+
+
+def _active_answer(store: dict):
+    attempt = store.get("answer")
+    if not attempt:
+        raise HTTPException(status_code=400, detail="请先开始一次答题")
+    blueprint = store["blueprints"].get(attempt["document_id"])
+    if blueprint is None:
+        store.pop("answer", None)
+        raise HTTPException(status_code=404, detail="这份答题对应的蓝图已经不在了")
+    return attempt, blueprint
+
+
+@app.get("/api/answer")
+def api_answer_state(store: dict = Depends(require_session)):
+    attempt = store.get("answer")
+    if not attempt:
+        doc, blueprint = _answer_bundle(store)
+        return inactive_view(doc.paradigm_display)
+    blueprint = store["blueprints"].get(attempt["document_id"])
+    if blueprint is None:
+        store.pop("answer", None)
+        doc, blueprint = _answer_bundle(store)
+        return inactive_view(doc.paradigm_display)
+    return public_view(attempt, blueprint)
+
+
+@app.post("/api/answer/start")
+def api_answer_start(req: AnswerStartRequest, request: Request, store: dict = Depends(require_session)):
+    hit_limit(f"answer:{client_key(request)}", limit=120, window_seconds=600)
+    _doc, blueprint = _answer_bundle(store, req.document_id)
+    try:
+        attempt = start_attempt(blueprint, req.micro_session)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    store["answer"] = attempt
+    return public_view(attempt, blueprint)
+
+
+@app.post("/api/answer/submit")
+def api_answer_submit(req: AnswerTextRequest, request: Request, store: dict = Depends(require_session)):
+    hit_limit(f"answer:{client_key(request)}", limit=120, window_seconds=600)
+    attempt, blueprint = _active_answer(store)
+    try:
+        submit_text(attempt, blueprint, req.text)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return public_view(attempt, blueprint)
+
+
+@app.post("/api/answer/choose")
+def api_answer_choose(req: AnswerChooseRequest, request: Request, store: dict = Depends(require_session)):
+    hit_limit(f"answer:{client_key(request)}", limit=120, window_seconds=600)
+    attempt, blueprint = _active_answer(store)
+    try:
+        choose_option(attempt, blueprint, req.key, req.custom_text)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return public_view(attempt, blueprint)
+
+
+@app.post("/api/answer/inspiration")
+def api_answer_inspiration(request: Request, store: dict = Depends(require_session)):
+    hit_limit(f"answer:{client_key(request)}", limit=120, window_seconds=600)
+    attempt, blueprint = _active_answer(store)
+    try:
+        request_inspiration(attempt, blueprint)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return public_view(attempt, blueprint)
+
+
+@app.post("/api/answer/confirm")
+def api_answer_confirm(req: AnswerConfirmRequest, request: Request, store: dict = Depends(require_session)):
+    hit_limit(f"answer:{client_key(request)}", limit=120, window_seconds=600)
+    attempt, blueprint = _active_answer(store)
+    try:
+        confirm_output(attempt, blueprint, req.confirmed_output)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return public_view(attempt, blueprint)
+
+
+@app.post("/api/answer/acknowledge")
+def api_answer_acknowledge(req: AnswerTextRequest, request: Request, store: dict = Depends(require_session)):
+    hit_limit(f"answer:{client_key(request)}", limit=120, window_seconds=600)
+    attempt, blueprint = _active_answer(store)
+    try:
+        acknowledge_compare(attempt, blueprint, req.text)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return public_view(attempt, blueprint)
+
+
+@app.post("/api/answer/reset")
+def api_answer_reset(store: dict = Depends(require_session)):
+    store.pop("answer", None)
+    doc, _blueprint = _answer_bundle(store)
+    return inactive_view(doc.paradigm_display)
+
+
 @app.get("/login")
 def serve_login():
     return FileResponse(FRONTEND_DIR / "login.html")
+
+
+@app.get("/answer")
+def serve_answer(request: Request):
+    token = request.cookies.get(COOKIE_NAME)
+    try:
+        if token:
+            session_state(request)
+        else:
+            raise HTTPException(status_code=401, detail="请先登录")
+    except HTTPException:
+        return RedirectResponse(url="/login", status_code=303)
+    page = FRONTEND_DIR / "answer.html"
+    if page.exists():
+        return FileResponse(str(page))
+    raise HTTPException(status_code=404, detail="答题页还没有准备好")
 
 
 @app.get("/")
