@@ -32,7 +32,7 @@ python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 
 ```bash
 export ADMIN_USERNAME=admin
-export ADMIN_PASSWORD='你的密码'
+export WORKSHOP_PASSWORD='你的密码'
 ```
 
 然后访问 [http://127.0.0.1:8000](http://127.0.0.1:8000)，使用该账号登录。DeepSeek 出题另外读取 `DEEPSEEK_API_KEY`；未配置时仍可使用内置 8 关蓝图。

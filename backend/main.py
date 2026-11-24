@@ -110,7 +110,7 @@ def clone_seed() -> Dict[str, Any]:
 def on_startup():
     init_default_document()
     if not login_configured():
-        print("ADMIN_PASSWORD is not set; workshop login is closed.")
+        print("WORKSHOP_PASSWORD is not set; workshop login is closed.")
 
 
 class LoginRequest(BaseModel):

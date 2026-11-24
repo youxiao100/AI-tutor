@@ -26,7 +26,7 @@ def admin_username() -> str:
 
 
 def _admin_password() -> str:
-    return os.environ.get("ADMIN_PASSWORD", "")
+    return os.environ.get("WORKSHOP_PASSWORD", "")
 
 
 def login_configured() -> bool:
