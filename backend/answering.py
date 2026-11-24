@@ -57,7 +57,7 @@ SLOT_STAGE = {
 RUBRIC_TERMS: Dict[str, List[List[str]]] = {
     "problem_discovery": [
         ["检索", "文献", "知识", "认知", "入口", "数据库", "读者", "单元", "表示", "负荷", "信任", "验证", "带宽", "学者", "排序"],
-        ["反而", "为什么", "矛盾", "瓶颈", "负担", "过载", "焦虑", "转嫁", "越搜", "看不过来"],
+        ["反而", "为什么", "矛盾", "瓶颈", "负担", "过载", "焦虑", "转嫁", "越搜", "看不过来", "还在", "对不上", "卡在", "错开", "接不上", "然而", "仍然", "尽管"],
     ],
     "gap_identification": [
         ["知识图谱", "RAG", "抽取", "知识元", "大模型", "现有", "图谱", "向量", "检索系统"],
@@ -156,11 +156,34 @@ def has_any(text: str, words: List[str]) -> bool:
     return any(word in haystack for word in words)
 
 
+def _scene_anchors(stage: StageBlueprint) -> List[str]:
+    """Content words from this stage's own scene, so a non-demo paper can be answered."""
+    opening = stage.opening_prompt_template or ""
+    scene = opening.split("如果让你")[0]
+    scene = re.sub(r"材料里的情境是[:：]?", "", scene)
+    stop = {"材料", "情境", "这一", "现象"}
+    anchors: List[str] = []
+    for chunk in re.findall(r"[\u4e00-\u9fff]{2,16}", scene):
+        if chunk in stop:
+            continue
+        anchors.append(chunk)
+        if len(chunk) <= 4:
+            continue
+        for size in (2, 3, 4):
+            for index in range(0, len(chunk) - size + 1):
+                piece = chunk[index:index + size]
+                if piece not in stop:
+                    anchors.append(piece)
+    return list(dict.fromkeys(anchors))
+
+
 def failed_rubric_ids(stage: StageBlueprint, text: str) -> List[str]:
     checks = RUBRIC_TERMS.get(stage.stage_code, [])
     failed: List[str] = []
     for index, rubric in enumerate(stage.diagnostic_rubrics):
         terms = checks[index] if index < len(checks) else []
+        if index == 0 and stage.stage_code == "problem_discovery":
+            terms = list(terms) + _scene_anchors(stage)
         if terms and not has_any(text, terms):
             failed.append(rubric.rubric_id)
     if stage.stage_code == "credibility_and_boundaries" and len(stage.diagnostic_rubrics) >= 2:

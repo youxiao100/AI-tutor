@@ -55,7 +55,7 @@ def _scene(doc: AdaptedDocument) -> str:
         if len(pieces) >= 2:
             break
     raw = "；".join(pieces) if pieces else "标注里写下的那个还没被解决的矛盾"
-    cleaned = _scrub(raw, doc.spoiler_blacklist)
+    cleaned = _scrub(raw, doc.spoiler_blacklist).rstrip("。．.；; ")
     if len(re.sub(r"\s+", "", cleaned)) < 8:
         return "标注里写下的那个还没被解决的矛盾"
     return cleaned

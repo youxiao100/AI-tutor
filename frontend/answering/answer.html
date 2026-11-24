@@ -201,7 +201,7 @@
           ? view.paradigm_display
           : '使用题库页当前的训练蓝图';
         document.getElementById('setup-stages').innerHTML = (view && view.stage_titles ? view.stage_titles : []).map((stage) =>
-          `<li>第 ${stage.stage_number} 关 · ${esc(stage.title)}</li>`
+          `<li>${esc(stage.title)}</li>`
         ).join('');
         const cards = document.getElementById('session-cards');
         cards.innerHTML = (view && view.sessions ? view.sessions : []).map((session) => `

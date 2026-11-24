@@ -59,6 +59,54 @@ class LiveBlueprintTest(unittest.TestCase):
         for term in SPOILERS:
             self.assertNotIn(term, blob)
 
+    def test_another_paper_is_organized_and_answerable(self):
+        raw = {
+            "schema_version": "lis-mas-v0.1",
+            "paper_id": "社区夜间档案室的借阅断档",
+            "point_annotations": {
+                "01": {
+                    "point": "01",
+                    "label": "问题",
+                    "status": "reported",
+                    "items": [{
+                        "value": "社区夜间档案室每天闭馆后仍有居民来查家谱，窗口只在白天开放，材料都在，人却对不上时间。",
+                        "quote": "社区夜间档案室每天闭馆后仍有居民来查家谱。",
+                    }],
+                },
+                "04": {
+                    "point": "04",
+                    "label": "范式",
+                    "status": "reported",
+                    "items": [{"value": "定性案例研究", "quote": "本文采用定性案例研究。"}],
+                },
+                "06": {
+                    "point": "06",
+                    "label": "情境",
+                    "status": "reported",
+                    "items": [{
+                        "value": "值班记录把夜间咨询记成次日白天的来访，居民以为没人受理。",
+                        "quote": "夜间咨询被记成次日来访。",
+                    }],
+                },
+            },
+        }
+        doc = adapt_lis_mas_json(raw, doc_id="doc_night")
+        blueprint = build_live_blueprint(doc)
+        self.assertEqual(blueprint.paper_id, "社区夜间档案室的借阅断档")
+        self.assertNotIn("Lib3", blueprint.stages[0].opening_prompt_template)
+        self.assertIn("档案室", blueprint.stages[0].opening_prompt_template)
+        from backend.answering import submit_text
+        attempt = start_attempt(blueprint, "full_8_stages")
+        submit_text(
+            attempt,
+            blueprint,
+            "具体对象是社区夜间档案室的值班窗口。白天材料都在，居民却只能闭馆后来，时间对不上，所以困难还在。",
+        )
+        view = public_view(attempt, blueprint)
+        self.assertEqual(view["phase"], "synthesize")
+        self.assertEqual(view["source_label"], "刚上传的 JSON")
+        self.assertNotIn("Lib3", json.dumps(view, ensure_ascii=False))
+
 
 if __name__ == "__main__":
     unittest.main()
