@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from backend.question_bank.models import AdaptedDocument, TrainingBlueprint, StageBlueprint
 from backend.question_bank.adapter import adapt_lis_mas_json
 from backend.question_bank.golden_blueprint import build_golden_lib3_blueprint
+from backend.question_bank.live_blueprint import build_live_blueprint
 from backend.question_bank.question_builder import (
     generate_training_blueprint_via_deepseek,
     regenerate_single_stage_via_deepseek,
@@ -118,7 +119,7 @@ class LoginRequest(BaseModel):
 
 
 class AnswerStartRequest(BaseModel):
-    document_id: str = "doc_0001"
+    document_id: str = ""
     micro_session: str = "full_8_stages"
 
 
@@ -268,11 +269,17 @@ async def upload_paper_json(file: UploadFile = File(...), store: dict = Depends(
     doc = adapt_lis_mas_json(raw_data, doc_id=doc_id)
     store["documents"][doc_id] = doc
     store["active_doc_id"] = doc_id
-    store["blueprints"].pop(doc_id, None)
+    try:
+        blueprint = build_live_blueprint(doc)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"这份 JSON 没法整理成试题：{exc}") from exc
+    store["blueprints"][doc_id] = blueprint
+    store.pop("answer", None)
     return {
-        "message": f"成功导入并清洗《{doc.paper_id}》",
+        "message": f"已按《{doc.paper_id}》实时整理 {len(blueprint.stages)} 关，题库审校和前端答题都改用这一份",
         "document_id": doc_id,
         "document": doc.model_dump(),
+        "blueprint": blueprint.model_dump(),
     }
 
 
@@ -367,6 +374,12 @@ def api_save_stage(req: UpdateStageRequest, store: dict = Depends(require_sessio
     return {"blueprint": bp.model_dump()}
 
 
+def _answer_catalog(doc, blueprint):
+    titles = [{"stage_number": stage.stage_number, "title": stage.title} for stage in blueprint.stages]
+    source = "刚上传的 JSON" if str(blueprint.blueprint_id).startswith("bp_live_") else "内置演示蓝图"
+    return inactive_view(doc.paradigm_display, doc.document_id, source, titles)
+
+
 def _answer_bundle(store: dict, document_id: Optional[str] = None):
     doc_id = (document_id or store.get("active_doc_id") or "doc_0001").strip()
     doc = store["documents"].get(doc_id)
@@ -392,12 +405,12 @@ def api_answer_state(store: dict = Depends(require_session)):
     attempt = store.get("answer")
     if not attempt:
         doc, blueprint = _answer_bundle(store)
-        return inactive_view(doc.paradigm_display)
+        return _answer_catalog(doc, blueprint)
     blueprint = store["blueprints"].get(attempt["document_id"])
     if blueprint is None:
         store.pop("answer", None)
         doc, blueprint = _answer_bundle(store)
-        return inactive_view(doc.paradigm_display)
+        return _answer_catalog(doc, blueprint)
     return public_view(attempt, blueprint)
 
 
@@ -471,8 +484,8 @@ def api_answer_acknowledge(req: AnswerTextRequest, request: Request, store: dict
 @app.post("/api/answer/reset")
 def api_answer_reset(store: dict = Depends(require_session)):
     store.pop("answer", None)
-    doc, _blueprint = _answer_bundle(store)
-    return inactive_view(doc.paradigm_display)
+    doc, blueprint = _answer_bundle(store)
+    return _answer_catalog(doc, blueprint)
 
 
 @app.get("/login")

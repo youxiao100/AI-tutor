@@ -18,7 +18,7 @@
 | 做什么 | 清洗论文 JSON，生成并审校 8 关蓝图 | 学生按当前蓝图作答 |
 | 代码 | `backend/question_bank/` | `frontend/answering/answer.html`、`backend/answering.py` |
 | 页面 | [http://127.0.0.1:8000](http://127.0.0.1:8000) | [http://127.0.0.1:8000/answer](http://127.0.0.1:8000/answer) |
-| 输入 | `data/lib3_sample.json` 或上传的标注 JSON | 题库里当前这篇论文的蓝图 |
+| 输入 | 上传标注 JSON 后立刻整理成 8 关；未上传时用内置 Lib3 演示 | 同一份题库。本页也能上传 JSON，整理完直接作答 |
 | 不做什么 | 不保存学生答卷 | 不调用 DeepSeek，不按和论文的相似度打分 |
 
 登录密码只来自环境变量 `WORKSHOP_PASSWORD`，不要写进代码或仓库。
@@ -48,8 +48,9 @@ DeepSeek 出题另外读取 `DEEPSEEK_API_KEY`。没配置时，题库使用内�
 - `golden_blueprint.py`：内置《Lib3 范式研究》8 关黄金蓝图。离线可用。
 - `question_builder.py`：四步逆向出题。配置了 `DEEPSEEK_API_KEY` 时可以重写整套或单关。
 - `models.py`：文档、蓝图、选项和安检门的数据结构。
-- `cached_lib3_blueprint.json`：默认加载的蓝图缓存。
-- 样例输入在 `data/lib3_sample.json`。
+- `live_blueprint.py`：上传 JSON 后立刻整理 8 关，不调用 DeepSeek。
+- `cached_lib3_blueprint.json`：还没上传时使用的 Lib3 演示缓存。
+- 样例输入在 `data/lib3_sample.json`。上传你的标注 JSON 后，题库审校和前端答题都会改用那一份。
 
 审校页面是 `frontend/question_bank/index.html`。右上角可以进入前端答题。
 

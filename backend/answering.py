@@ -755,10 +755,23 @@ def public_view(attempt: dict, blueprint: TrainingBlueprint) -> dict:
         "research_state": research_state(attempt),
         "comparison": _comparison_block(attempt, blueprint),
         "report": _report(attempt, blueprint),
+        "document_id": blueprint.document_id,
+        "source_label": _source_label(blueprint),
     }
 
 
-def inactive_view(paradigm_display: str) -> dict:
+def _source_label(blueprint: TrainingBlueprint) -> str:
+    if str(blueprint.blueprint_id).startswith("bp_live_"):
+        return "刚上传的 JSON"
+    return "内置演示蓝图"
+
+
+def inactive_view(
+    paradigm_display: str,
+    document_id: str = "",
+    source_label: str = "",
+    stage_titles: Optional[list] = None,
+) -> dict:
     sessions = []
     for key, spec in MICRO_SESSIONS.items():
         sessions.append({
@@ -769,6 +782,9 @@ def inactive_view(paradigm_display: str) -> dict:
     return {
         "active": False,
         "paradigm_display": paradigm_display,
+        "document_id": document_id,
+        "source_label": source_label,
+        "stage_titles": stage_titles or [],
         "sessions": sessions,
     }
 
