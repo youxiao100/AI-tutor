@@ -10,14 +10,14 @@ Provides:
 
 from datetime import datetime, timezone
 from typing import List
-from backend.models import (
+from backend.question_bank.models import (
     AdaptedDocument,
     TrainingBlueprint,
     StageBlueprint,
     ChoiceOption,
     DiagnosticRubricItem,
 )
-from backend.question_builder import build_expert_anchors_for_stage, audit_and_scrub_spoilers
+from backend.question_bank.question_builder import build_expert_anchors_for_stage, audit_and_scrub_spoilers
 
 
 def build_golden_lib3_blueprint(doc: AdaptedDocument) -> TrainingBlueprint:

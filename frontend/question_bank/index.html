@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>引导式科研思维训练系统 v2.0 — 数据清洗与四步动态出题引擎工作台</title>
+  <title>题库审校 — 引导式科研思维训练系统</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
   <style>
@@ -57,7 +57,7 @@
           <div class="flex items-center gap-2.5">
             <h1 class="text-lg font-bold tracking-tight text-white">引导式科研思维训练系统</h1>
             <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
-              v2.0 出题引擎工作台
+              题库审校
             </span>
           </div>
           <p class="text-xs text-slate-400 mt-0.5" id="header-paper-title">正在加载论文标注 JSON...</p>
@@ -67,7 +67,7 @@
       <div class="flex flex-wrap items-center gap-2">
         <label class="cursor-pointer px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
           <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-          <span>上传论文 JSON</span>
+          <span>上传 JSON 并整理试题</span>
           <input type="file" id="json-upload-input" accept=".json" class="hidden" onchange="handleUploadJson(event)" />
         </label>
 
@@ -79,6 +79,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           <span>DeepSeek API 动态出题测试</span>
         </button>
+        <a href="/answer?start=1" class="px-3 py-2 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-xs font-semibold text-amber-200 border border-amber-500/40 transition">用当前题库作答</a>
         <button type="button" onclick="logout()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition">退出登录</button>
       </div>
     </div>
@@ -780,7 +781,7 @@
       if (!file) return;
       const formData = new FormData();
       formData.append('file', file);
-      showStatus(`正在上传并清洗《${file.name}》...`);
+      showStatus(`正在根据 ${file.name} 实时整理 8 关试题...`);
       try {
         const res = await api('/api/upload-json', {
           method: 'POST',
